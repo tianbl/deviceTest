@@ -10,8 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import cn.com.eastsoft.gateway.GatewayJFrame;
-import cn.com.eastsoft.gateway.ServerSet;
+import cn.com.eastsoft.ui.MainJFrame;
+import cn.com.eastsoft.ui.gateway.ServerSet;
 
 public class MysqlOperation implements ServerInfo{
 	private Connection conn = null;
@@ -115,7 +115,7 @@ public class MysqlOperation implements ServerInfo{
 	//查询结果，返回list使用数组格式化结果。查询单个结果
 	public Map<String,Object> queryMapBySql(String[] format,String sql){
 		if(false==open()){
-			GatewayJFrame.showMssage("数据库连接失败！\n");
+			MainJFrame.showMssage("数据库连接失败！\n");
 			return null;
 		}
 		Map<String,Object> map = null;

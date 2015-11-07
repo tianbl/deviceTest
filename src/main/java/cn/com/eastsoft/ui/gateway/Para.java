@@ -1,4 +1,4 @@
-package cn.com.eastsoft.gateway;
+package cn.com.eastsoft.ui.gateway;
 
 public class Para
 {

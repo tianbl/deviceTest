@@ -3,7 +3,7 @@ package cn.com.eastsoft.scanningGun.barcode;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.com.eastsoft.gateway.GatewayGeneralSet;
+import cn.com.eastsoft.ui.gateway.GatewayGeneralSet;
 
 
 /**

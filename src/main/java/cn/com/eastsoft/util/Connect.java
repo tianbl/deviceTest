@@ -7,7 +7,7 @@ import java.net.InetAddress;
 
 import org.apache.commons.net.telnet.TelnetClient;
 
-import cn.com.eastsoft.gateway.GatewayJFrame;
+import cn.com.eastsoft.ui.MainJFrame;
 
 public class Connect {
 	private TelnetClient telnet = new TelnetClient();
@@ -67,17 +67,17 @@ public class Connect {
 					if (str.contains("login:")) {
 						tryLogin("root");
 					} else if ("c++".equals(str)) {
-						GatewayJFrame.showMssage("");
+						MainJFrame.showMssage("");
 					} else {
-						GatewayJFrame.showMssage("非java或c++网关!\n");
+						MainJFrame.showMssage("非java或c++网关!\n");
 					}
 				}
 			} else {
-				GatewayJFrame.showMssage("网关和本机不在一个网段，请检查并修改本机地址！\n");
+				MainJFrame.showMssage("网关和本机不在一个网段，请检查并修改本机地址！\n");
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			GatewayJFrame.showMssage("网关无法登录！\n");
+			MainJFrame.showMssage("网关无法登录！\n");
 			e.printStackTrace();
 		}
 	}
@@ -213,7 +213,7 @@ public class Connect {
 					end = sb.length();
 					byte[] temp = sb.substring(start, end).getBytes("ISO8859-1");
 					String str = new String(temp, "GBK");
-					GatewayJFrame.showMssage(str);
+					MainJFrame.showMssage(str);
 					// 清空
 					// sb.delete(0, sb.length()-1);
 					start = end;
@@ -222,7 +222,7 @@ public class Connect {
 					if (sb.toString().endsWith(pattern)) {
 						byte[] temp1 = sb.substring(end, sb.length() - 1).getBytes("ISO8859-1");
 						String str = new String(temp1, "GBK");
-						GatewayJFrame.showMssage(str +"count="+count+ "\n");
+						MainJFrame.showMssage(str + "count=" + count + "\n");
 						// 传输过来的字符串为ISO8859-1，需要转换为GBK格式的
 						byte[] temp = sb.toString().getBytes("ISO8859-1");
 						return new String(temp, "GBK");
@@ -272,7 +272,7 @@ public class Connect {
 	public void disconnect() {
 		try {
 			telnet.disconnect();
-			GatewayJFrame.showMssage("连接关闭...\n");
+			MainJFrame.showMssage("连接关闭...\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

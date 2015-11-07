@@ -1,6 +1,6 @@
 package cn.com.eastsoft.action;
 
-import cn.com.eastsoft.gateway.GatewayJFrame;
+import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.ToolUtil;
 
@@ -19,12 +19,12 @@ public class Program
 		} catch (Exception e)
 		{
 			e.printStackTrace();
-			GatewayJFrame.showMssage("请检查" + filedir + "是否存在！\n");
+			MainJFrame.showMssage("请检查" + filedir + "是否存在！\n");
 			return false;
 		}
 		try
 		{
-			GatewayJFrame.showMssage("正在提取" + filedir + "，请稍后。。。\n");
+			MainJFrame.showMssage("正在提取" + filedir + "，请稍后。。。\n");
 			Thread.sleep(1000);
 		} catch (InterruptedException e1)
 		{
@@ -35,10 +35,10 @@ public class Program
 		String gettime = ToolUtil.calculateTime(target);
 		if (gettime == null)
 		{
-			GatewayJFrame.showMssage("检查" + target + "是否在当前目录中！\n");
+			MainJFrame.showMssage("检查" + target + "是否在当前目录中！\n");
 			return false;
 		}
-		GatewayJFrame.showMssage("正在下载" + filedir + "，大约" + gettime + "秒！\n");
+		MainJFrame.showMssage("正在下载" + filedir + "，大约" + gettime + "秒！\n");
 
 		telnet.sendCommand("cd /mnt/temp");
 		telnet.sendCommand("tftp -gr kill_gateway.sh " + hostIP);
@@ -49,12 +49,12 @@ public class Program
 		String dn = telnet.sendCommand("dn  " + hostIP);
 		if (dn.contains("timeout"))
 		{
-			GatewayJFrame.showMssage("TFTP未打开，无法下载文件！\n");
+			MainJFrame.showMssage("TFTP未打开，无法下载文件！\n");
 			return false;
 		}
 		if (dn.contains("server error"))
 		{
-			GatewayJFrame.showMssage("TFTP端错误，请检查TFTP！\n");
+			MainJFrame.showMssage("TFTP端错误，请检查TFTP！\n");
 			return false;
 		}
 		downloadGatewayStart(telnet, hostIP);
@@ -63,10 +63,10 @@ public class Program
 		if (dn.contains("网关程序更新完毕"))
 		{
 			telnet.sendCommand("sync");
-			GatewayJFrame.showMssage(filedir + "下载成功！\n");
+			MainJFrame.showMssage(filedir + "下载成功！\n");
 		} else
 		{
-			GatewayJFrame.showMssage(filedir + "下载失败！\n");
+			MainJFrame.showMssage(filedir + "下载失败！\n");
 			return false;
 		}
 		
@@ -84,7 +84,7 @@ public class Program
 		} catch (Exception e)
 		{
 			e.printStackTrace();
-			GatewayJFrame.showMssage("请检查" + target + "是否存在！\n");
+			MainJFrame.showMssage("请检查" + target + "是否存在！\n");
 			return false;
 		}
 		telnet.sendCommand("cd /");

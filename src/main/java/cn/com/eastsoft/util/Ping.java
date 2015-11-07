@@ -7,7 +7,7 @@ import java.net.InetAddress;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import cn.com.eastsoft.gateway.GatewayJFrame;
+import cn.com.eastsoft.ui.MainJFrame;
 
 public class Ping{
 
@@ -23,7 +23,7 @@ public class Ping{
     	
     	try{
     		//System.out.println(pingCmd);
-    		//GatewayJFrame.showMssageln(cmd);
+    		//MainJFrame.showMssageln(cmd);
     		Process process = runtime.exec(cmd);
     		if(null==process){
     			return false;
@@ -32,7 +32,7 @@ public class Ping{
     		int connectedCount = 0;
     		String line = null;
     		while((line = bufferedReader.readLine())!=null){
-    			GatewayJFrame.showMssageln(line);
+    			MainJFrame.showMssageln(line);
     		}
     		int i=process.waitFor();
     		return 0==i;
@@ -63,7 +63,7 @@ public class Ping{
     	
     	try{
     		//System.out.println(pingCmd);
-    		GatewayJFrame.showMssage(pingCmd+"\n");
+    		MainJFrame.showMssage(pingCmd + "\n");
     		Process process = runtime.exec(pingCmd);
     		if(null==process){
     			return false;
@@ -75,7 +75,7 @@ public class Ping{
     			int tem = getResultCheck(line);
     			if(tem==1){
     				connectedCount+=tem;
-    				GatewayJFrame.showMssage(line+"\n");
+    				MainJFrame.showMssage(line + "\n");
     			}
     		}
     		return connectedCount >= 3;
@@ -108,7 +108,7 @@ public class Ping{
     	
     	try{
     		//System.out.println(pingCmd);
-    		GatewayJFrame.showMssage(pingCmd+"\n");
+    		MainJFrame.showMssage(pingCmd + "\n");
     		Process process = runtime.exec(pingCmd);
     		if(null==process){
     			return false;
@@ -120,8 +120,8 @@ public class Ping{
     			int tem = getResultCheck(line);
     			if(tem==1){
     				connectedCount+=tem;
-    				GatewayJFrame.showMssage(connectedCount+line+"\n");
-    				//GatewayJFrame.showMssage(line+"\n");
+    				MainJFrame.showMssage(connectedCount + line + "\n");
+    				//MainJFrame.showMssage(line+"\n");
     			}
     		}
     		int i=process.waitFor();
@@ -170,7 +170,7 @@ public class Ping{
     		String line = null;
     		while((line = bufferedReader.readLine())!=null){
     			connectedCount++;
-    			//GatewayJFrame.showMssage(line+"\n");
+    			//MainJFrame.showMssage(line+"\n");
     			if(4==connectedCount){
     				result = line.substring(line.indexOf(":")+1, line.length()).trim();
     			}
@@ -197,7 +197,7 @@ public class Ping{
     	String strength = null;
     	try{
     		System.out.println(cmd);
-    		//GatewayJFrame.showMssage(cmd+"\n");
+    		//MainJFrame.showMssage(cmd+"\n");
     		Process process = runtime.exec(cmd);
     		if(null==process){
     			return null;

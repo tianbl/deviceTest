@@ -1,4 +1,4 @@
-package cn.com.eastsoft.gateway;
+package cn.com.eastsoft.ui.gateway;
 
 import java.awt.CheckboxGroup;
 import java.awt.event.ActionEvent;
@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.util.ProgramDataManag;
 import cn.com.eastsoft.scanningGun.barcode.BarcodeBuffer;
 import cn.com.eastsoft.scanningGun.barcode.BarcodeProducter;
@@ -24,7 +25,7 @@ public class GatewayGeneralSet extends JPanel{
 	
 	private static GatewayGeneralSet instance;
 	
-	private GatewayJFrame gatewayJFrame;
+	private MainJFrame mainJFrame;
 	private JLabel gatewayIP_JLabel;
 	private JTextField gatewayIP_JTextField;
 	
@@ -116,7 +117,7 @@ public class GatewayGeneralSet extends JPanel{
 			try{
 				localIP_JTextField.setText(InetAddress.getLocalHost().getHostAddress());
 			}catch (UnknownHostException e){
-				GatewayJFrame.showMssage("获取本机IP地址失败！\n");
+				MainJFrame.showMssage("获取本机IP地址失败！\n");
 			}
 			localIP_JLabel.setBounds(350,y,50,30);
 			localIP_JTextField.setBounds(400, y, 100, 30);
@@ -185,19 +186,19 @@ public class GatewayGeneralSet extends JPanel{
 //				barcodeProducter.startProduct();
 				
 				while(true){
-					/*if(null==gatewayJFrame){
-						gatewayJFrame = GatewayJFrame.getInstance();	//获取主框架单例
+					/*if(null==mainJFrame){
+						mainJFrame = MainJFrame.getInstance();	//获取主框架单例
 					}*/
 					try {
 						String queueInfo = BarcodeBuffer.consume();
-						GatewayJFrame.showMssageln("扫码信息缓冲队列中获取二维码信息："+queueInfo+"");
+						MainJFrame.showMssageln("扫码信息缓冲队列中获取二维码信息：" + queueInfo + "");
 						qrcode_JTextField.setText("");
 						Thread.sleep(300);
 						qrcode_JTextField.setText(queueInfo);
 						Map map = getQrCode_Info();
-						GatewayJFrame.showMssage("解析得到标签信息如下\n"+
-						"sn:"+map.get("sn")+" gid:"+map.get("gid")+" pwd:"+map.get("pwd")+"\n");
-						GatewayJFrame.getInstance().getGatewayTest().allTest();
+						MainJFrame.showMssage("解析得到标签信息如下\n" +
+								"sn:" + map.get("sn") + " gid:" + map.get("gid") + " pwd:" + map.get("pwd") + "\n");
+						MainJFrame.getInstance().getGatewayTest().allTest();
 						//Thread.sleep(2000);
 						qrcode_JTextField.setText("");
 					} catch (InterruptedException e) {
@@ -218,23 +219,23 @@ public class GatewayGeneralSet extends JPanel{
 					@Override
 					public void run() {
 						// TODO Auto-generated method stub
-						GatewayJFrame.showMssage("测试路由器网关连接被点击\n");
-						if(null==gatewayJFrame){
-							gatewayJFrame = GatewayJFrame.getInstance();	//获取主框架单例
+						MainJFrame.showMssage("测试路由器网关连接被点击\n");
+						if(null== mainJFrame){
+							mainJFrame = MainJFrame.getInstance();	//获取主框架单例
 						}
-						if(null!=gatewayJFrame.telnetGateway(gatewayIP_JTextField.getText(), 23)){
-							GatewayJFrame.showMssage("路由器连接成功\n");
+						if(null!= mainJFrame.telnetGateway(gatewayIP_JTextField.getText(), 23)){
+							MainJFrame.showMssage("路由器连接成功\n");
 						}
 					}
 				}).start();
 			}else if("清空信息台".equals(name)){
-				GatewayJFrame.clearShow();
+				MainJFrame.clearShow();
 			}else if("刷新".equals(arg.getActionCommand())){
-				GatewayJFrame.showMssage("刷新,重新获取本机IP...\n");
+				MainJFrame.showMssage("刷新,重新获取本机IP...\n");
 				try{
 					localIP_JTextField.setText(InetAddress.getLocalHost().getHostAddress());
 				}catch (UnknownHostException e){
-					GatewayJFrame.showMssage("获取本机IP地址失败！\n");
+					MainJFrame.showMssage("获取本机IP地址失败！\n");
 				}
 				String gip = gatewayIP_JTextField.getText();
 				String loip = localIP_JTextField.getText();
@@ -243,7 +244,7 @@ public class GatewayGeneralSet extends JPanel{
 					loip = loip.substring(0, 7);
 				}
 				if (!gip.equals(loip)) {
-					GatewayJFrame.showMssageln("本机和网关不再同一网段");
+					MainJFrame.showMssageln("本机和网关不再同一网段");
 				}
 			}
 		}
@@ -279,7 +280,7 @@ public class GatewayGeneralSet extends JPanel{
 	public Map<String,String> getQrCode_Info(){
 		String qrcodeinfo = qrcode_JTextField.getText();
 		if(null==qrcodeinfo||"".equals(qrcodeinfo)){
-			GatewayJFrame.showMssageln("没有输入网关条码信息,请检查输出确认程序是否已得到二维码信息...");
+			MainJFrame.showMssageln("没有输入网关条码信息,请检查输出确认程序是否已得到二维码信息...");
 			return null;
 		}
 		
@@ -308,7 +309,7 @@ public class GatewayGeneralSet extends JPanel{
 	}
 	
 	private boolean setVersion(){
-		Map<String,String> map = ProgramDataManag.getConfigData("routeTestData.ini");
+		Map<String,String> map = ProgramDataManag.getConfigData("deviceTest.conf");
 		if(null==map){
 			return false;
 		}
@@ -331,7 +332,7 @@ public class GatewayGeneralSet extends JPanel{
 		//map.put("hostIP", localIP_JTextField.getText());
 		map.put("gatewayIP", defaultgw_JTextField.getText());
 		
-		ProgramDataManag.updateConf("routeTestData.ini", map);
+		ProgramDataManag.updateConf("deviceTest.conf", map);
 		return true;
 	}
 	
@@ -342,17 +343,17 @@ public class GatewayGeneralSet extends JPanel{
 		String[] completions = {"","0","00","000","0000","00000","000000","0000000"};
 		try{
 			aidLong = Long.parseLong(aid);
-			GatewayJFrame.showMssageln("将"+aid+"转换成16进制");
+			MainJFrame.showMssageln("将" + aid + "转换成16进制");
 			String addr = Long.toHexString(aidLong);
 			if(addr.length()<=8){
 				plcTestAddr_JText.setText(completions[8-addr.length()]+addr);
 			}else{
-				GatewayJFrame.showMssageln("转换后的十六进制串口地址输入长度超过允许的8位，请重新检查输入...");
+				MainJFrame.showMssageln("转换后的十六进制串口地址输入长度超过允许的8位，请重新检查输入...");
 				JOptionPane.showConfirmDialog(this, "地址转换发生错误，长度超过允许？", "提示",
 						JOptionPane.YES_NO_CANCEL_OPTION);
 			}
 		}catch(Exception e){
-			GatewayJFrame.showMssageln("地址格式错误，或者已经转换成16进制，无需再次转换");
+			MainJFrame.showMssageln("地址格式错误，或者已经转换成16进制，无需再次转换");
 			e.printStackTrace();
 		}
 	}
@@ -376,10 +377,10 @@ public class GatewayGeneralSet extends JPanel{
 			if(isProducer){
 				if(matcher1.start(0)>0){//如果不是完全匹配，则去掉干扰字符
 					BarcodeBuffer.product(matcher1.group(0));
-					GatewayJFrame.showMssageln("由表达式regex1匹配，缓冲区存在干扰字符，已将正确条码信息取出，测试期间请减少输入操作");
+					MainJFrame.showMssageln("由表达式regex1匹配，缓冲区存在干扰字符，已将正确条码信息取出，测试期间请减少输入操作");
 				}else{
 					BarcodeBuffer.product(str);
-					GatewayJFrame.showMssageln("正则表达式1完全匹配");
+					MainJFrame.showMssageln("正则表达式1完全匹配");
 				}
 			}
 			return 1;
@@ -387,10 +388,10 @@ public class GatewayGeneralSet extends JPanel{
 			if(isProducer){
 				if(matcher2.start(0)>0){//如果不是完全匹配，则去掉干扰字符
 					BarcodeBuffer.product(matcher2.group(0));
-					GatewayJFrame.showMssageln("由表达式regex2匹配，缓冲区存在干扰字符，已将正确条码信息取出，测试期间请减少减少输入操作");
+					MainJFrame.showMssageln("由表达式regex2匹配，缓冲区存在干扰字符，已将正确条码信息取出，测试期间请减少减少输入操作");
 				}else{
 					BarcodeBuffer.product(str);
-					GatewayJFrame.showMssageln("正则表达式2完全匹配");
+					MainJFrame.showMssageln("正则表达式2完全匹配");
 				}
 			}
 			return 2;

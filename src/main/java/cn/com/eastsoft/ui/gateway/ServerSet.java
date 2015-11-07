@@ -1,4 +1,4 @@
-package cn.com.eastsoft.gateway;
+package cn.com.eastsoft.ui.gateway;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +12,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.util.ProgramDataManag;
 
 public class ServerSet extends JPanel implements ActionListener{
@@ -83,20 +84,20 @@ public class ServerSet extends JPanel implements ActionListener{
 					jfc.showDialog(new JLabel(), "选择");
 					File file=jfc.getSelectedFile();
 					if(file.isDirectory()){
-						GatewayJFrame.showMssageln("请选择一个文件...");
+						MainJFrame.showMssageln("请选择一个文件...");
 						fileName=null;
 						realPath=null;
 						fileChooser.setText("....");
 					}else if(file.isFile()){
-						GatewayJFrame.showMssageln("文件:"+file.getAbsolutePath());
+						MainJFrame.showMssageln("文件:" + file.getAbsolutePath());
 						fileChooser.setText(jfc.getSelectedFile().getName());
 					}
 					fileName = jfc.getSelectedFile().getName();
 					if(fileName.endsWith(".xlsx")){
-						GatewayJFrame.showMssageln("选择的文件版本不对，需要03版本execl...");
+						MainJFrame.showMssageln("选择的文件版本不对，需要03版本execl...");
 						return ;
 					}else if(false==fileName.endsWith(".xls")){
-						GatewayJFrame.showMssageln("选择的文件格式不对...");
+						MainJFrame.showMssageln("选择的文件格式不对...");
 						return ;
 					}
 					realPath = file.getAbsolutePath();
@@ -158,7 +159,7 @@ public class ServerSet extends JPanel implements ActionListener{
 	}
 	
 	private boolean setVersion(){
-		Map<String,String> map = ProgramDataManag.getConfigData("routeTestData.ini");
+		Map<String,String> map = ProgramDataManag.getConfigData("deviceTest.conf");
 		if(null==map){
 			return false;
 		}
@@ -176,7 +177,7 @@ public class ServerSet extends JPanel implements ActionListener{
 		for(int i=0;i<info_JTextField.length;i++){
 			map.put(key[i], info_JTextField[i].getText());
 		}
-		ProgramDataManag.updateConf("routeTestData.ini", map);
+		ProgramDataManag.updateConf("deviceTest.conf", map);
 		return true;
 	}
 }

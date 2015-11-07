@@ -1,4 +1,4 @@
-package cn.com.eastsoft.gateway;
+package cn.com.eastsoft.ui;
 
 public class Main {
 	public static void main(String[] args){
@@ -14,9 +14,9 @@ public class Main {
 			e.printStackTrace();
 		}
 		
-		GatewayJFrame inst = GatewayJFrame.getInstance();
+		MainJFrame inst = MainJFrame.getInstance();
 		/*for(int i=0;i<26;i++){
-			GatewayJFrame.showMssage("asdfasfdas\n");
+			MainJFrame.showMssage("asdfasfdas\n");
 			try {
 	            Thread.sleep(200);
 	        } catch (InterruptedException e) {

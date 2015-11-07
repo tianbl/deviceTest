@@ -1,4 +1,4 @@
-package cn.com.eastsoft.gateway;
+package cn.com.eastsoft.ui;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -14,13 +14,17 @@ import javax.swing.UIManager;
 import javax.swing.WindowConstants;
 import javax.swing.border.TitledBorder;
 
+import cn.com.eastsoft.ui.gateway.GatewayGeneralSet;
+import cn.com.eastsoft.ui.gateway.GatewayTest;
+import cn.com.eastsoft.ui.gateway.GatewayUpdate;
+import cn.com.eastsoft.ui.gateway.ServerSet;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.ProgramDataManag;
 
 //主界用于组织各个功能模块，各模块分开编写
-public class GatewayJFrame extends JFrame{
+public class MainJFrame extends JFrame{
 	
-	private static GatewayJFrame instance;
+	private static MainJFrame instance;
 	
 	private JPanel jpanel_View;	//信息显示panel
 	private static JTextArea jTextArea_View;
@@ -31,14 +35,14 @@ public class GatewayJFrame extends JFrame{
 	private GatewayUpdate gateUpdate;
 	private ServerSet serverSet;
 	
-	public static GatewayJFrame getInstance(){
+	public static MainJFrame getInstance(){
 		if(instance==null){
-			instance = new GatewayJFrame();
+			instance = new MainJFrame();
 		}
 		return instance;
 	}
 	
-	private GatewayJFrame(){
+	private MainJFrame(){
 		super();
 		setResizable(false);
 		setBackground(Color.WHITE);
@@ -92,7 +96,7 @@ public class GatewayJFrame extends JFrame{
 			public void windowClosing(WindowEvent e)
 			{
 				//System.out.println("触发windowClosing事件");
-				ProgramDataManag.deleteConf("routeTestData.ini");
+				ProgramDataManag.deleteConf("deviceTest.conf");
 				GatewayGeneralSet.getInstance().saveVersion();
 				serverSet.saveVersion();
 				gateUpdate.saveVersion();

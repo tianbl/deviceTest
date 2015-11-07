@@ -2,7 +2,7 @@ package cn.com.eastsoft.util;
 
 import java.util.Map;
 
-import cn.com.eastsoft.gateway.GatewayJFrame;
+import cn.com.eastsoft.ui.MainJFrame;
 
 public class Database
 {
@@ -12,34 +12,34 @@ public class Database
 			path = "./";
 		}
 		String cd = telnet.sendCommand("cd "+path);
-		GatewayJFrame.showMssageln(cd);
+		MainJFrame.showMssageln(cd);
 		String tftp = telnet.sendCommand("tftp -g -l "+fileName+" -r "+fileName+" "+hostIP);
 		if(tftp.contains("timeout")){
-			GatewayJFrame.showMssageln("传输超时，请检查连接！");
+			MainJFrame.showMssageln("传输超时，请检查连接！");
 			return false;
 		}
-		GatewayJFrame.showMssageln(tftp);
+		MainJFrame.showMssageln(tftp);
 		return true;
 	}
 	public static boolean dbupdateDB(Connect telnet, String gatewaydb, String hostIP)
 	{
 		String mtd = telnet.sendCommand("mtd erase production");
 		String tftps = telnet.sendCommand("dbupdate " + gatewaydb + " " + hostIP);
-		//GatewayJFrame.showMssageln(tftps);
+		//MainJFrame.showMssageln(tftps);
 		if (tftps.contains("timeout"))
 		{
-			GatewayJFrame.showMssage("传输超时,检查TFTP是否打开，与路由器的连接是否断开\n");
+			MainJFrame.showMssage("传输超时,检查TFTP是否打开，与路由器的连接是否断开\n");
 			return false;
 		}else if(tftps.contains("error")){
-			GatewayJFrame.showMssage("传输失败 ,检查TFTP是否打开，与路由器的连接是否断开\n");
+			MainJFrame.showMssage("传输失败 ,检查TFTP是否打开，与路由器的连接是否断开\n");
 			return false;
 		}
 		String lsGatewayDb = telnet.sendCommand("ls /gateway/cpp/main");
 		if(!lsGatewayDb.contains(gatewaydb)){
-			GatewayJFrame.showMssageln("路由器下载"+gatewaydb+"失败！");
+			MainJFrame.showMssageln("路由器下载" + gatewaydb + "失败！");
 			return false;
 		}else{
-			GatewayJFrame.showMssageln("路由器下载"+gatewaydb+"成功！");
+			MainJFrame.showMssageln("路由器下载" + gatewaydb + "成功！");
 			String sync = telnet.sendCommand("sync");
 		}
 		return true;
@@ -48,17 +48,17 @@ public class Database
 	public static boolean dbuploadGateway(Connect telnet, String hostIP, String gatewaydb,String path)
 	{
 		if(null==telnet){
-			GatewayJFrame.showMssageln("智能路由器网关未连接,或者网关连接已中断,请重新连接...");
+			MainJFrame.showMssageln("智能路由器网关未连接,或者网关连接已中断,请重新连接...");
 			return false;
 		}
 		String dbupload = telnet.sendCommand("dbupload "+gatewaydb+" "+hostIP);
 		if(dbupload.contains("can't open '"+gatewaydb+"'")){
-			GatewayJFrame.showMssageln("智能路由器网关中不存在数据库...");
+			MainJFrame.showMssageln("智能路由器网关中不存在数据库...");
 			return false;
 		}else if(dbupload.contains("timeout")){
-			GatewayJFrame.showMssageln("连接超时，请检查tftp服务器是否开启，tftp服务器地址（这里是本机IP）是否正确...");
+			MainJFrame.showMssageln("连接超时，请检查tftp服务器是否开启，tftp服务器地址（这里是本机IP）是否正确...");
 		}else if(dbupload.contains("ok")&&ToolUtil.isFileExist(path+"\\"+gatewaydb)){
-			GatewayJFrame.showMssageln("数据库文件上传至tftp根目录，检验数据库信息...");
+			MainJFrame.showMssageln("数据库文件上传至tftp根目录，检验数据库信息...");
 		}
 		
 		try{
@@ -75,11 +75,11 @@ public class Database
 		Map account = SQLite.getAccountByGid(path+"\\"+gatewaydb, gid);
 		Map para = SQLite.getPara(path+"\\"+gatewaydb);
 		if(null==account||null==para){
-			GatewayJFrame.showMssageln("网关数据库检测失败...");
+			MainJFrame.showMssageln("网关数据库检测失败...");
 			flag=false;
 		}else{
 			if(gid.equals(account.get("gid"))){
-				GatewayJFrame.showMssageln("网关号GID写入成功...");
+				MainJFrame.showMssageln("网关号GID写入成功...");
 			}
 		}
 		return flag;
@@ -87,26 +87,26 @@ public class Database
 	
 	public static boolean uploadFileOfUsb(Connect telnet,String hostIP){
 		if(null==telnet){
-			GatewayJFrame.showMssageln("路由器网关连接不存在...");
+			MainJFrame.showMssageln("路由器网关连接不存在...");
 			return false;
 		}
 		String cd = telnet.sendCommand("cd /mnt");
-		//GatewayJFrame.showMssageln(cd);
+		//MainJFrame.showMssageln(cd);
 		String absolute = telnet.sendCommand("find -name testFile.txt").split("\r\n")[1];
-		//GatewayJFrame.showMssageln(absolute);
+		//MainJFrame.showMssageln(absolute);
 		if(false==absolute.contains("testFile.txt")){
-			GatewayJFrame.showMssageln("找不文件testFile.txt");
+			MainJFrame.showMssageln("找不文件testFile.txt");
 			return false;
 		}
 		String path = absolute.substring(0, absolute.length()-"testFile.txt".length());
 		String smartRouter = telnet.sendCommand("cd "+path);
-		//GatewayJFrame.showMssageln(smartRouter);
+		//MainJFrame.showMssageln(smartRouter);
 		String tftp = telnet.sendCommand("tftp -p -l testFile.txt "+hostIP);
 		if(tftp.contains("timeout")){
-			GatewayJFrame.showMssageln("文件传输超时检查主机地址，路由器地址等设置是否正确 ");
+			MainJFrame.showMssageln("文件传输超时检查主机地址，路由器地址等设置是否正确 ");
 			return false;
 		}
-		GatewayJFrame.showMssageln(tftp);
+		MainJFrame.showMssageln(tftp);
 		try{
 			Thread.sleep(2500);
 		}catch(Exception e){

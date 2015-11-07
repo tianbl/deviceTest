@@ -1,4 +1,4 @@
-package cn.com.eastsoft.gateway;
+package cn.com.eastsoft.ui.gateway;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -15,6 +15,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.ProgramDataManag;
 
@@ -58,7 +59,7 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 			try{
 				localIP_JTextField.setText(InetAddress.getLocalHost().getHostAddress());
 			}catch (UnknownHostException e){
-				GatewayJFrame.showMssage("获取本机IP地址失败！\n");
+				MainJFrame.showMssage("获取本机IP地址失败！\n");
 			}
 			
 			localIP_JLabel.setBounds(300,10,50,30);
@@ -79,10 +80,10 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 					jfc.showDialog(new JLabel(), "选择");
 					File file=jfc.getSelectedFile();
 					if(file.isDirectory()){
-						GatewayJFrame.showMssageln("请选择一个文件...");
+						MainJFrame.showMssageln("请选择一个文件...");
 						
 					}else if(file.isFile()){
-						GatewayJFrame.showMssageln("文件:"+file.getAbsolutePath());
+						MainJFrame.showMssageln("文件:" + file.getAbsolutePath());
 					}
 					updateFileName = jfc.getSelectedFile().getName();
 					realPath = file.getAbsolutePath();
@@ -146,11 +147,11 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 				}
 			}).start();
 		}else if("刷新".equals(arg0.getActionCommand())){
-			GatewayJFrame.showMssage("刷新,重新获取本机IP...\n");
+			MainJFrame.showMssage("刷新,重新获取本机IP...\n");
 			try{
 				localIP_JTextField.setText(InetAddress.getLocalHost().getHostAddress());
 			}catch (UnknownHostException e){
-				GatewayJFrame.showMssage("获取本机IP地址失败！\n");
+				MainJFrame.showMssage("获取本机IP地址失败！\n");
 			}
 			String gip = gatewayIP_JTextField.getText();
 			String loip = localIP_JTextField.getText();
@@ -159,13 +160,13 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 				loip = loip.substring(0, 7);
 			}
 			if(!gip.equals(loip)){
-				GatewayJFrame.showMssageln("本机和网关不再同一网段...");
+				MainJFrame.showMssageln("本机和网关不再同一网段...");
 			}
 		}
 	}
 	
 	private boolean updateGateway(String gatewayip,String hostip){
-		Connect telnet = GatewayJFrame.getInstance().telnetGateway(gatewayIP_JTextField.getText(), 23);
+		Connect telnet = MainJFrame.getInstance().telnetGateway(gatewayIP_JTextField.getText(), 23);
 		if(null==telnet){
 			return false;
 		}
@@ -178,12 +179,12 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 		//脚本修改后输出的内容不再是"ESHG50"-"v1.1"这种，没有两端的冒号
 		//hw = hw.substring(1, hw.length()-1);
 		//fw = fw.substring(1, fw.length()-1);
-		GatewayJFrame.showMssageln("hw："+hw+"\nfw："+fw+"\ngw："+gw);
+		MainJFrame.showMssageln("hw：" + hw + "\nfw：" + fw + "\ngw：" + gw);
 		String hwLast_v = hwVersion_JTextField.getText();
 		String fwLast_v = fwVersion_JTextField.getText();
 		String gwLast_v = gwVersion_JTextField.getText();
 		if(hw.equals(hwLast_v)&&fw.equals(fwLast_v)&&gw.equals(gwLast_v)){
-			GatewayJFrame.showMssageln("路由器网关已是最新版本无需更新！");
+			MainJFrame.showMssageln("路由器网关已是最新版本无需更新！");
 			return true;
 		}else{
 			int i = JOptionPane.showConfirmDialog(this, "路由器网关存在可更新的版本？","提示",
@@ -193,24 +194,24 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 			}
 		}
 		if(null==updateFileName||updateFileName.equals("")){
-			GatewayJFrame.showMssageln("先选择升级文件");
+			MainJFrame.showMssageln("先选择升级文件");
 			return false;
 		}
 		
 		String setHw = telnet.sendCommand("version hw set "+hwLast_v);
 		if(setHw.contains("ok")){
-			GatewayJFrame.showMssageln("硬件版本号设置成功...升级系统");
+			MainJFrame.showMssageln("硬件版本号设置成功...升级系统");
 		}else{
-			GatewayJFrame.showMssageln("硬件版本号设置失败！");
+			MainJFrame.showMssageln("硬件版本号设置失败！");
 		}
-		//GatewayJFrame.showMssageln("fwupdate "+updateFileName+" "+hostip);
+		//MainJFrame.showMssageln("fwupdate "+updateFileName+" "+hostip);
 		telnet.sendCommand("cd /tmp");
 		String download = telnet.sendCommand("tftp -g -r "+updateFileName+" "+hostip);
 		if(download.contains("timeout")){
-			GatewayJFrame.showMssageln("升级文件传输超时!");
+			MainJFrame.showMssageln("升级文件传输超时!");
 			return false;
 		}else if(download.contains("error")){
-			GatewayJFrame.showMssageln("发生错误!");
+			MainJFrame.showMssageln("发生错误!");
 			return false;
 		}
 		telnet.sendCommandLiner("sysupgrade -n "+updateFileName);
@@ -219,7 +220,7 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 	
 	private boolean setVersion(){
 		
-		Map<String,String> map = ProgramDataManag.getConfigData("routeTestData.ini");
+		Map<String,String> map = ProgramDataManag.getConfigData("deviceTest.conf");
 		if(null==map){
 			return false;
 		}
@@ -240,7 +241,7 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 		map.put("fwVersion", fwVersion_JTextField.getText());
 		map.put("gwVersion", gwVersion_JTextField.getText());
 		
-		ProgramDataManag.updateConf("routeTestData.ini", map);
+		ProgramDataManag.updateConf("deviceTest.conf", map);
 		return true;
 	}
 }

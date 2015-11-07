@@ -1,6 +1,6 @@
 package cn.com.eastsoft.scanningGun.barcode;
 
-import cn.com.eastsoft.gateway.GatewayJFrame;
+import cn.com.eastsoft.ui.MainJFrame;
 
 /**
  *启动和关闭条码枪扫描线程
@@ -23,7 +23,7 @@ public class BarcodeProducter {
             return;
         }
         //System.out.println("启动条形码生产者...");
-        GatewayJFrame.showMssageln("启动条二维码生产者...");
+        MainJFrame.showMssageln("启动条二维码生产者...");
         //启动一个线程用于在程序关闭的时候卸载键盘钩子
         thread=new Thread(new Runnable(){
 			@Override
@@ -31,7 +31,7 @@ public class BarcodeProducter {
 				// TODO Auto-generated method stub
 //				System.out.println("条码枪扫描线程启动");
 				//scanBarcodeService.startScanBarcodeService();
-				GatewayJFrame.showMssageln("二维码枪扫描线程启动...");
+				MainJFrame.showMssageln("二维码枪扫描线程启动...");
                 while (!quit) {
                     try {
                         Thread.sleep(Long.MAX_VALUE);
@@ -63,7 +63,7 @@ public class BarcodeProducter {
         if(thread!=null){
             thread.interrupt();
             System.out.println("停止条形码生产者...");
-//            GatewayJFrame.showMssageln("停止条形码生产者...");
+//            MainJFrame.showMssageln("停止条形码生产者...");
         }
     }
 }
