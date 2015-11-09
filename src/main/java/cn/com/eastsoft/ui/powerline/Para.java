@@ -1,4 +1,4 @@
-package cn.com.eastsoft.ui.gateway;
+package cn.com.eastsoft.ui.powerline;
 
 public class Para
 {
@@ -7,7 +7,7 @@ public class Para
 	public final static String localhost_IP = "192.168.1.2";
 	public final static String accompany_IP = "192.168.1.3";
 	public final static String pcgateway = "pcgateway.db";
-	public final static String gateway = "gateway.db";
+	public final static String gateway = "powerlineImpl.db";
 	public final static String password = "123456";
 	
 	// 视频功能库文件

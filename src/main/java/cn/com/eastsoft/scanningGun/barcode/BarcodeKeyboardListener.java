@@ -3,7 +3,7 @@ package cn.com.eastsoft.scanningGun.barcode;
 import java.util.HashMap;
 import java.util.Map;
 
-import cn.com.eastsoft.ui.gateway.GatewayGeneralSet;
+import cn.com.eastsoft.ui.powerline.GeneralSet;
 
 
 /**
@@ -87,7 +87,7 @@ public class BarcodeKeyboardListener{
         if(keyCode == 10) {
         	barcode.append(letter);
         }
-        if(GatewayGeneralSet.getInstance().checkCodeInfo(barcode.toString(),true)>0){
+        if(GeneralSet.getInstance().checkCodeInfo(barcode.toString(),true)>0){
 //        	BarcodeBuffer.product(barcode.toString());
 //        	System.out.println("get match is: "+barcode.toString()+"");
         	//当匹配成功后重新为缓冲分配内存，匹配串在checkCodeInfo中被加入生产者队列

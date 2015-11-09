@@ -1,4 +1,4 @@
-package cn.com.eastsoft.mysqlTest;
+package cn.com.eastsoft.sql.serverInfoImpl;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,10 +10,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import cn.com.eastsoft.sql.ServerInfo;
 import cn.com.eastsoft.ui.MainJFrame;
-import cn.com.eastsoft.ui.gateway.ServerSet;
+import cn.com.eastsoft.ui.powerline.ServerSet;
 
-public class MysqlOperation implements ServerInfo{
+public class MysqlOperation implements ServerInfo {
 	private Connection conn = null;
 	private String user;
 	private String password;

@@ -1,4 +1,4 @@
-package cn.com.eastsoft.ui.gateway;
+package cn.com.eastsoft.ui.powerline;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -6,11 +6,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
+import javax.swing.*;
 
 import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.util.ProgramDataManag;
@@ -18,8 +14,8 @@ import cn.com.eastsoft.util.ProgramDataManag;
 public class ServerSet extends JPanel implements ActionListener{
 	
 	private static ServerSet instance=null;
-	private String[] title={"资源服务器 IP","数据库用户名","密码","端口"};
-	private String[] defaultValue={"127.0.0.1","root","123456","3303"};
+	private String[] title={"资源服务器 IP","数据库用户名","密码","端口","数据库名"};
+	private String[] defaultValue={"127.0.0.1","root","123456","3303","enterprise"};
 	private JLabel[] info_JLabel;
 	private JTextField[] info_JTextField;
 	
@@ -51,7 +47,12 @@ public class ServerSet extends JPanel implements ActionListener{
 			info_JTextField = new JTextField[title.length];
 			for(int i=0;i<title.length;i++){
 				info_JLabel[i] = new JLabel(title[i]);
-				info_JTextField[i] = new JTextField();
+
+				if(i==2){
+					info_JTextField[i] = new JPasswordField();
+				}else {
+					info_JTextField[i] = new JTextField();
+				}
 				info_JLabel[i].setBounds(20, 40*i+10, 100, 30);
 				info_JTextField[i].setBounds(120, 40*i+10, 200, 30);
 				info_JTextField[i].setText(defaultValue[i]);
@@ -64,7 +65,7 @@ public class ServerSet extends JPanel implements ActionListener{
 		
 		{
 			exchange = new JButton("直接使用资源服务器数据库");
-			exchange.setBounds(20, 200, 200, 30);
+			exchange.setBounds(20, 220, 200, 30);
 			exchange.addActionListener(this);
 			this.add(exchange);
 		}
@@ -163,7 +164,7 @@ public class ServerSet extends JPanel implements ActionListener{
 		if(null==map){
 			return false;
 		}
-		String[] key = {"sourceIP","username","password","port"};
+		String[] key = {"sourceIP","username","password","port","databaseName"};
 		for(int i=0;i<info_JTextField.length;i++){
 			info_JTextField[i].setText(map.get(key[i]));
 		}
@@ -173,7 +174,7 @@ public class ServerSet extends JPanel implements ActionListener{
 	public boolean saveVersion(){
 		Map<String,String> map = new HashMap();
 
-		String[] key = {"sourceIP","username","password","port"};
+		String[] key = {"sourceIP","username","password","port","databaseName"};
 		for(int i=0;i<info_JTextField.length;i++){
 			map.put(key[i], info_JTextField[i].getText());
 		}

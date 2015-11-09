@@ -1,4 +1,4 @@
-package cn.com.eastsoft.mysqlTest;
+package cn.com.eastsoft.sql.serverInfoImpl;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,6 +8,7 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
+import cn.com.eastsoft.sql.ServerInfo;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;

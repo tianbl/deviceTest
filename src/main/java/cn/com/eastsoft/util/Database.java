@@ -2,6 +2,7 @@ package cn.com.eastsoft.util;
 
 import java.util.Map;
 
+import cn.com.eastsoft.sql.SQLite;
 import cn.com.eastsoft.ui.MainJFrame;
 
 public class Database
@@ -34,7 +35,7 @@ public class Database
 			MainJFrame.showMssage("传输失败 ,检查TFTP是否打开，与路由器的连接是否断开\n");
 			return false;
 		}
-		String lsGatewayDb = telnet.sendCommand("ls /gateway/cpp/main");
+		String lsGatewayDb = telnet.sendCommand("ls /powerlineImpl/cpp/main");
 		if(!lsGatewayDb.contains(gatewaydb)){
 			MainJFrame.showMssageln("路由器下载" + gatewaydb + "失败！");
 			return false;
@@ -72,7 +73,7 @@ public class Database
 	public static boolean checkGatewayDb(Connect telnet,String gid,String hostIP,String gatewaydb,String path,Map<String, Object> map){
 		boolean flag = true;
 		dbuploadGateway(telnet,hostIP,gatewaydb,path);
-		Map account = SQLite.getAccountByGid(path+"\\"+gatewaydb, gid);
+		Map account = SQLite.getAccountByGid(path + "\\" + gatewaydb, gid);
 		Map para = SQLite.getPara(path+"\\"+gatewaydb);
 		if(null==account||null==para){
 			MainJFrame.showMssageln("网关数据库检测失败...");

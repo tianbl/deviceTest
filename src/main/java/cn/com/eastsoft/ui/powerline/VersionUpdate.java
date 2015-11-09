@@ -1,4 +1,4 @@
-package cn.com.eastsoft.ui.gateway;
+package cn.com.eastsoft.ui.powerline;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,7 +20,7 @@ import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.ProgramDataManag;
 
 //网关升级部分
-public class GatewayUpdate extends JPanel implements ActionListener{
+public class VersionUpdate extends JPanel implements ActionListener{
 	
 	private JLabel hwVersion_Jlabel;	//硬件版本号
 	private JTextField hwVersion_JTextField;
@@ -41,7 +41,7 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 	private JButton fileChooser;
 	private String updateFileName;
 	private String realPath;
-	public GatewayUpdate(){
+	public VersionUpdate(){
 		super();
 		this.setLayout(null);
 		
@@ -171,8 +171,8 @@ public class GatewayUpdate extends JPanel implements ActionListener{
 			return false;
 		}
 		
-		telnet.sendCommand("cd /gateway/cpp/main");
-		String gw = telnet.sendCommand("./gateway.exe -v").split("\r\n")[1];
+		telnet.sendCommand("cd /powerlineImpl/cpp/main");
+		String gw = telnet.sendCommand("./powerlineImpl.exe -v").split("\r\n")[1];
 		String hw = telnet.sendCommand("version hw show").split("\r\n")[1];
 		String fw = telnet.sendCommand("version fw show").split("\r\n")[1];
 		

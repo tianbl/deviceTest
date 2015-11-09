@@ -1,4 +1,4 @@
-package cn.com.eastsoft.mysqlTest;
+package cn.com.eastsoft.sql;
 
 import java.util.Map;
 

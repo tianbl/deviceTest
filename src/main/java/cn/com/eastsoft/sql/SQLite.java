@@ -1,5 +1,7 @@
-package cn.com.eastsoft.util;
+package cn.com.eastsoft.sql;
 
+
+import cn.com.eastsoft.util.ToolUtil;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
