@@ -129,7 +129,7 @@ public class ProgramDataManag {
 	private static String getNowPath() {
 		File directory = new File(".");
 		try {
-			return directory.getCanonicalPath()+"\\";
+			return directory.getCanonicalPath()+"/";
 		} catch (Exception exp) {
 			exp.printStackTrace();
 			return null;

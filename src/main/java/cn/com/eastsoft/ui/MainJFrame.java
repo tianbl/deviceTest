@@ -78,6 +78,35 @@ public class MainJFrame extends JFrame implements ActionListener {
             this.setVisible(true);
         }
         {
+            this.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    System.out.println("触发windowClosing事件");
+
+                    if(uiPanel!=null){
+                        ProgramDataManag.deleteConf("deviceTest.conf");
+                        serverSet.saveVersion();
+                        gateUpdate.saveVersion();
+                        GeneralSet.getInstance().saveVersion();
+                        GeneralSet.getInstance().stopProduct();
+                    }
+                }
+
+                public void windowClosed(WindowEvent e) {
+                    //System.out.println("触发windowClosed事件");
+                }
+            });
+        }
+    }
+
+    public void switchWindow() {
+        System.out.println("切换回到设备选择窗口");
+        uiPanel.setVisible(false);
+        indexPanel.setVisible(true);
+    }
+
+    private void initPowerLineUI(){
+
+        {   //初始化电力线设备测试界面
 //            indexPanel.setVisible(false);
             {    //信息输出区域设置
                 jpanel_View = new JPanel();
@@ -103,12 +132,12 @@ public class MainJFrame extends JFrame implements ActionListener {
                 deviceTest = new DeviceTest();
                 jtab.add(deviceTest, "  1.设备测试测试    ");
 
+                serverSet = ServerSet.getInstance();
+                jtab.add(serverSet, " 2.数据来源设置  ");
+
                 //升级部分
                 gateUpdate = new VersionUpdate();
-                jtab.add(gateUpdate, "  2.固件更新   ");
-
-                serverSet = ServerSet.getInstance();
-                jtab.add(serverSet, " 3.数据来源设置  ");
+                jtab.add(gateUpdate, "  3.固件更新   ");
 
                 //jtab.setEnabledAt(0, false);
                 deviceTest.set_module(moduleItem.getSelectedIndex());
@@ -123,38 +152,26 @@ public class MainJFrame extends JFrame implements ActionListener {
 
             this.add(uiPanel);
         }
-        {
-            this.addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent e) {
-                    System.out.println("触发windowClosing事件");
-                    ProgramDataManag.deleteConf("deviceTest.conf");
-                    GeneralSet.getInstance().saveVersion();
-                    serverSet.saveVersion();
-                    gateUpdate.saveVersion();
-
-                    GeneralSet.getInstance().stopProduct();
-                }
-
-                public void windowClosed(WindowEvent e) {
-                    //System.out.println("触发windowClosed事件");
-                }
-            });
-        }
-    }
-
-    public void switchWindow() {
-        System.out.println("切换回到设备选择窗口");
-        uiPanel.setVisible(false);
-        indexPanel.setVisible(true);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
+    public void actionPerformed(ActionEvent e) {    //选择设备时进入指定设备测试界面并做设置
         indexPanel.setVisible(false);
-        uiPanel.setVisible(true);
+        if(moduleItem.getSelectedIndex()<=1&&uiPanel==null){
+            initPowerLineUI();
+            uiPanel.setVisible(true);
+        }else{
+            uiPanel.setVisible(true);
+        }
         deviceTest.set_module(moduleItem.getSelectedIndex());
     }
 
+    /**
+     * telnet 连接
+     * @param gatewayIP
+     * @param port
+     * @return
+     */
     public Connect telnetGateway(String gatewayIP, int port) {
         showMssage("正在连接网关，请稍后...\n");
         Connect telnet;

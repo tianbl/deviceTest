@@ -46,11 +46,13 @@ public class GeneralSet extends JPanel {
     private JButton refresh_JButton;
 
 
-    private JLabel plcTestAddr_JLabel;
-    private JTextField plcTestAddr_JText;
+
     private JButton changeToHex;
     private JLabel numOfPing_JLabel;
     private JTextField numOfPing_JTextField;
+    public JLabel udpPort_JLabel;
+    public JTextField udpPort_JText;
+
 
     //private JTextChange jtextChange;
     private ButtonActionListener buttonActionListener;
@@ -101,11 +103,18 @@ public class GeneralSet extends JPanel {
             numOfPing_JLabel.setBounds(10, y, 100, 30);
             numOfPing_JTextField.setBounds(100, y, 100, 30);
             numOfPing_JTextField.setText("5");
-            JLabel jlabel = new JLabel("ping通3次才算成功，不填默认为0次");
+            JLabel jlabel = new JLabel("默认0次，需要通过3次以上");
             jlabel.setBounds(200, y, 300, 30);
             this.add(jlabel);
             this.add(numOfPing_JLabel);
             this.add(numOfPing_JTextField);
+
+            udpPort_JLabel = new JLabel("UDP通信端口");
+            udpPort_JText = new JTextField();
+            udpPort_JLabel.setBounds(530,y,100,30);
+            udpPort_JText.setBounds(610,y,100,30);
+            this.add(udpPort_JLabel);
+            this.add(udpPort_JText);
         }
 
         {
@@ -282,10 +291,6 @@ public class GeneralSet extends JPanel {
         }
     }
 
-    public String getPlcTestAddr() {
-        return plcTestAddr_JText.getText();
-    }
-
     public int getNumOfPing() {
         String pingNum = numOfPing_JTextField.getText();
         boolean isempty = (null == pingNum || "".equals(pingNum));
@@ -306,6 +311,14 @@ public class GeneralSet extends JPanel {
 
     public String getDefaultgw_IP() {
         return defaultgw_JTextField.getText();
+    }
+
+    public JTextField getUdpPort_JText() {
+        return udpPort_JText;
+    }
+
+    public void setUdpPort_JText(JTextField udpPort_JText) {
+        this.udpPort_JText = udpPort_JText;
     }
 
     public Map<String, String> getQrCode_Info() {
@@ -346,22 +359,19 @@ public class GeneralSet extends JPanel {
         }
 
         numOfPing_JTextField.setText(map.get("pingNum"));
-        plcTestAddr_JText.setText(map.get("serialAddr"));
+        udpPort_JText.setText(map.get("udpPort"));
         gatewayIP_JTextField.setText(map.get("routeGateIP"));
         accompanyIP_JText.setText(map.get("accompanyIP"));
-        //localIP_JTextField.setText(map.get("hostIP"));
         defaultgw_JTextField.setText(map.get("gatewayIP"));
         return true;
     }
 
-    public boolean saveVersion() {
+    public boolean saveVersion() {  //关闭程序时保存程序部分设置
         Map<String, String> map = new HashMap();
-
-//        map.put("pingNum", numOfPing_JTextField.getText());
-//        map.put("serialAddr", plcTestAddr_JText.getText());
+        map.put("pingNum", numOfPing_JTextField.getText());
+        map.put("udpPort", udpPort_JText.getText());
         map.put("routeGateIP", gatewayIP_JTextField.getText());
         map.put("accompanyIP", accompanyIP_JText.getText());
-        //map.put("hostIP", localIP_JTextField.getText());
         map.put("gatewayIP", defaultgw_JTextField.getText());
 
         ProgramDataManag.updateConf("deviceTest.conf", map);
@@ -370,23 +380,23 @@ public class GeneralSet extends JPanel {
 
 
     private void toHex() {
-        String aid = plcTestAddr_JText.getText();
-        long aidLong = 0;
-        String[] completions = {"", "0", "00", "000", "0000", "00000", "000000", "0000000"};
-        try {
-            aidLong = Long.parseLong(aid);
-            MainJFrame.showMssageln("将" + aid + "转换成16进制");
-            String addr = Long.toHexString(aidLong);
-            if (addr.length() <= 8) {
-                plcTestAddr_JText.setText(completions[8 - addr.length()] + addr);
-            } else {
-                MainJFrame.showMssageln("转换后的十六进制串口地址输入长度超过允许的8位，请重新检查输入...");
-                JOptionPane.showConfirmDialog(this, "地址转换发生错误，长度超过允许？", "提示",
-                        JOptionPane.YES_NO_CANCEL_OPTION);
-            }
-        } catch (Exception e) {
-            MainJFrame.showMssageln("地址格式错误，或者已经转换成16进制，无需再次转换");
-            e.printStackTrace();
-        }
+//        String aid = plcTestAddr_JText.getText();
+//        long aidLong = 0;
+//        String[] completions = {"", "0", "00", "000", "0000", "00000", "000000", "0000000"};
+//        try {
+//            aidLong = Long.parseLong(aid);
+//            MainJFrame.showMssageln("将" + aid + "转换成16进制");
+//            String addr = Long.toHexString(aidLong);
+//            if (addr.length() <= 8) {
+//                plcTestAddr_JText.setText(completions[8 - addr.length()] + addr);
+//            } else {
+//                MainJFrame.showMssageln("转换后的十六进制串口地址输入长度超过允许的8位，请重新检查输入...");
+//                JOptionPane.showConfirmDialog(this, "地址转换发生错误，长度超过允许？", "提示",
+//                        JOptionPane.YES_NO_CANCEL_OPTION);
+//            }
+//        } catch (Exception e) {
+//            MainJFrame.showMssageln("地址格式错误，或者已经转换成16进制，无需再次转换");
+//            e.printStackTrace();
+//        }
     }
 }

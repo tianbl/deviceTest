@@ -109,10 +109,15 @@ public class DeviceTest extends JPanel {
         if(selectModule==0){
             powerLine = new PowerAdapter();
             signalTest_JButton[3].setVisible(false);
+            generalSet.udpPort_JText.setVisible(true);
+            generalSet.udpPort_JLabel.setVisible(true);
             System.out.println(selectModule+"选择电力线适配器");
         }else if(selectModule==1){
             powerLine = new PowerLineWirelessRoute();
             signalTest_JButton[3].setVisible(true);
+
+            generalSet.udpPort_JText.setVisible(false);
+            generalSet.udpPort_JLabel.setVisible(false);
             System.out.println(selectModule+"选择电力线无线路由器");
         }
     }
@@ -146,7 +151,7 @@ public class DeviceTest extends JPanel {
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() { // 启动线程执行后续操作
-                                        powerLine.wan_Lan_test();
+                                        powerLine.info_set();
                                     }
                                 }).start();
                                 break;
@@ -156,7 +161,7 @@ public class DeviceTest extends JPanel {
                                     @Override
                                     public void run() { // 启动线程执行后续操作
 //                                        setGatewayInfo(gateway_IP, host_IP);
-                                        powerLine.info_set();
+                                        powerLine.wan_Lan_test();
                                     }
                                 }).start();
                                 break;
