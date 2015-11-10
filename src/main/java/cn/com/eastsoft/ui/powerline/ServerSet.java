@@ -21,8 +21,10 @@ public class ServerSet extends JPanel implements ActionListener{
 	
 	private JLabel fileChoserLabel;
 	private JButton fileChooser;
+    private JLabel filePathshow;
 	private JButton exchange;
 	private JPanel panelServer;
+    private String[] exchangeTiele={"使用本地execl文件测试","直接使用资源服务器数据库"};
 	
 	private String fileName;
 	private String realPath;
@@ -64,7 +66,7 @@ public class ServerSet extends JPanel implements ActionListener{
 		}
 		
 		{
-			exchange = new JButton("直接使用资源服务器数据库");
+			exchange = new JButton(exchangeTiele[1]);
 			exchange.setBounds(20, 220, 200, 30);
 			exchange.addActionListener(this);
 			this.add(exchange);
@@ -73,38 +75,44 @@ public class ServerSet extends JPanel implements ActionListener{
 			fileChoserLabel = new JLabel("请选择存放数据的数据execl文件");
 			fileChoserLabel.setBounds(20, 50, 200, 30);
 			this.add(fileChoserLabel);
+
+            filePathshow = new JLabel();
+            filePathshow.setBounds(20,100,700,30);
+            this.add(filePathshow);
 			
 			fileChooser = new JButton("...");
 			fileChooser.setBounds(200, 50, 200, 30);
-			fileChooser.addActionListener(new ActionListener(){
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					// TODO Auto-generated method stub
-					JFileChooser jfc=new JFileChooser();
-					jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES );
-					jfc.showDialog(new JLabel(), "选择");
-					File file=jfc.getSelectedFile();
-					if(file.isDirectory()){
-						MainJFrame.showMssageln("请选择一个文件...");
-						fileName=null;
-						realPath=null;
-						fileChooser.setText("....");
-					}else if(file.isFile()){
-						MainJFrame.showMssageln("文件:" + file.getAbsolutePath());
-						fileChooser.setText(jfc.getSelectedFile().getName());
-					}
-					fileName = jfc.getSelectedFile().getName();
-					if(fileName.endsWith(".xlsx")){
-						MainJFrame.showMssageln("选择的文件版本不对，需要03版本execl...");
-						return ;
-					}else if(false==fileName.endsWith(".xls")){
-						MainJFrame.showMssageln("选择的文件格式不对...");
-						return ;
-					}
-					realPath = file.getAbsolutePath();
-				}
-			});
-			fileChooser.setVisible(true);
+			fileChooser.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent arg0) {
+                    // TODO Auto-generated method stub
+                    JFileChooser jfc = new JFileChooser();
+                    jfc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+                    jfc.showDialog(new JLabel(), "选择");
+                    File file = jfc.getSelectedFile();
+                    if (file.isDirectory()) {
+                        MainJFrame.showMssageln("请选择一个文件...");
+                        fileName = null;
+                        realPath = null;
+                        fileChooser.setText("....");
+                    } else if (file.isFile()) {
+                        MainJFrame.showMssageln("文件:" + file.getAbsolutePath());
+                        fileChooser.setText(jfc.getSelectedFile().getName());
+                    }
+                    fileName = jfc.getSelectedFile().getName();
+                    if (fileName.endsWith(".xlsx")) {
+                        MainJFrame.showMssageln("选择的文件版本不对，需要03版本execl...");
+                        return;
+                    } else if (false == fileName.endsWith(".xls")) {
+                        MainJFrame.showMssageln("选择的文件格式不对...");
+                        return;
+                    } else {
+                        realPath = file.getAbsolutePath();
+                        filePathshow.setText("文件路径："+realPath);
+                    }
+                }
+            });
+//			fileChooser.setVisible(true);
 			this.add(fileChooser);
 		}
 		
@@ -127,6 +135,10 @@ public class ServerSet extends JPanel implements ActionListener{
 	public String getPort(){
 		return info_JTextField[3].getText();
 	}
+
+	public String getDatabase(){
+		return info_JTextField[4].getText();
+	}
 	
 	public String getRealPath(){
 		return realPath;
@@ -143,16 +155,18 @@ public class ServerSet extends JPanel implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent arg0) {
 		// TODO Auto-generated method stub
-		if("使用本地execl文件测试".equals(arg0.getActionCommand())){
-			exchange.setText("直接使用资源服务器数据库");
+		if(exchangeTiele[0].equals(arg0.getActionCommand())){
+			exchange.setText(exchangeTiele[1]);
 			panelServer.setVisible(false);
 			fileChooser.setVisible(true);
+            fileChooser.setText(fileName);
+            filePathshow.setText(realPath);
 			isLocalSelected = true;
-		}else if("直接使用资源服务器数据库".equals(arg0.getActionCommand())){
-			fileName=null;
-			realPath=null;
-			fileChooser.setText("....");
-			exchange.setText("使用本地execl文件测试");
+		}else if(exchangeTiele[1].equals(arg0.getActionCommand())){
+//			fileName=null;
+//			realPath=null;
+//			fileChooser.setText("....");
+			exchange.setText(exchangeTiele[0]);
 			fileChooser.setVisible(false);
 			panelServer.setVisible(true);
 			isLocalSelected = false;
@@ -168,7 +182,18 @@ public class ServerSet extends JPanel implements ActionListener{
 		for(int i=0;i<info_JTextField.length;i++){
 			info_JTextField[i].setText(map.get(key[i]));
 		}
-		
+        realPath = map.get("realPath");
+        fileName = realPath.substring(realPath.lastIndexOf("\\")+1);
+        isLocalSelected = Boolean.parseBoolean(map.get("isLocalSelected"));
+        if(isLocalSelected&&realPath!=null&&!"".equals(realPath)){
+            filePathshow.setText("文件路径："+realPath);
+            exchange.setText(exchangeTiele[1]);
+            fileChooser.setText(fileName);
+            panelServer.setVisible(false);
+        }else if(false==isLocalSelected){
+            exchange.setText(exchangeTiele[0]);
+            panelServer.setVisible(true);
+        }
 		return true;
 	}
 	public boolean saveVersion(){
@@ -178,6 +203,10 @@ public class ServerSet extends JPanel implements ActionListener{
 		for(int i=0;i<info_JTextField.length;i++){
 			map.put(key[i], info_JTextField[i].getText());
 		}
+        if(realPath!=null&&!"".equals(realPath)){
+            map.put("realPath", realPath);
+        }
+        map.put("isLocalSelected", String.valueOf(isLocalSelected));
 		ProgramDataManag.updateConf("deviceTest.conf", map);
 		return true;
 	}

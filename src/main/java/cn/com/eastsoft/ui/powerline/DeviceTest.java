@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,12 +15,10 @@ import javax.swing.border.TitledBorder;
 
 import cn.com.eastsoft.action.PowerLine;
 import cn.com.eastsoft.action.powerlineImpl.PowerAdapter;
-import cn.com.eastsoft.action.powerlineImpl.PowerLineWirelessRoute;
+import cn.com.eastsoft.action.powerlineImpl.WirelessRouteAndExpander;
 import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.sql.ServerInfo;
 import cn.com.eastsoft.util.Connect;
-import cn.com.eastsoft.util.Ping;
-import cn.com.eastsoft.util.XmlManager;
 
 //网关测试部分
 public class DeviceTest extends JPanel {
@@ -91,7 +86,7 @@ public class DeviceTest extends JPanel {
         }
 
         MainJFrame.showMssageln("程序当运行路径：" + getNowPath());
-        String gip = generalSet.getGateway_IP();
+        String gip = generalSet.getDevice_IP();
         String loip = generalSet.getLocal_IP();
         if (gip.length() > 7 && loip.length() > 7) {
             gip = gip.substring(0, 7);
@@ -113,7 +108,7 @@ public class DeviceTest extends JPanel {
             generalSet.udpPort_JLabel.setVisible(true);
             System.out.println(selectModule+"选择电力线适配器");
         }else if(selectModule==1){
-            powerLine = new PowerLineWirelessRoute();
+            powerLine = new WirelessRouteAndExpander();
             signalTest_JButton[3].setVisible(true);
 
             generalSet.udpPort_JText.setVisible(false);
@@ -128,7 +123,7 @@ public class DeviceTest extends JPanel {
             // TODO Auto-generated method stub
 
             String buttonName = arg.getActionCommand();
-            final String gateway_IP = generalSet.getGateway_IP();
+            final String device_IP = generalSet.getDevice_IP();
             final String host_IP = generalSet.getLocal_IP();
 
             if("重新选择测试设备".equals(buttonName)){
@@ -151,7 +146,7 @@ public class DeviceTest extends JPanel {
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() { // 启动线程执行后续操作
-                                        powerLine.info_set();
+                                        powerLine.info_set(null);
                                     }
                                 }).start();
                                 break;
@@ -197,10 +192,10 @@ public class DeviceTest extends JPanel {
     }
 
     public boolean allTest() {
-        String gateway_ip = generalSet.getGateway_IP();
+        String gateway_ip = generalSet.getDevice_IP();
         String localhost_ip = generalSet.getLocal_IP();
         String accompany_ip = generalSet.getAccompany_IP();
-        if (false == powerLine.info_set()) {
+        if (false == powerLine.info_set(null)) {
             int i = JOptionPane.showConfirmDialog(this, "信息设置发生错误，是否继续其他测试？", "提示", JOptionPane.YES_NO_CANCEL_OPTION);
             if (0 != i) {
                 return false;
@@ -225,46 +220,6 @@ public class DeviceTest extends JPanel {
                 return false;
             }
         }
-        return true;
-    }
-
-    private boolean wan_Lan_Test() {
-        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>1.WAN口和LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-
-        int numOfping = generalSet.getNumOfPing();
-        String gateway_IP = generalSet.getGateway_IP();
-        String[] targetIP = {gateway_IP, generalSet.getAccompany_IP(), generalSet.getDefaultgw_IP()};
-        String[] title = {"路由器网关", "配测IP(lan口连接设备)", "公司网关"};
-        for (int i = 0; i < targetIP.length; i++) {
-            MainJFrame.showMssage(title[i] + "连通性测试    ");
-            if (true == Ping.ping(targetIP[i], numOfping, 3000)) {
-                MainJFrame.showMssageln(title[i] + "ping测试通过！\n");
-            } else {
-                MainJFrame.showMssageln(title[i] + "ping测试不通过\n");
-                return false;
-            }
-        }
-
-        { // 获取路由器系统时钟，并计算系统时间误差
-            MainJFrame.showMssage("准备获取路由器系统时钟...\n");
-            Connect connect = MainJFrame.getInstance().telnetGateway(gateway_IP, 23);
-            String routeTime = connect.sendCommand("date +%s").split("\r\n")[1];
-            long routeTimeLong = Long.parseLong(routeTime, 10);
-            long nowTime = Calendar.getInstance().getTimeInMillis();
-            long diff = Math.abs(((nowTime / 1000) - routeTimeLong));
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd H:m:s");
-            MainJFrame.showMssage("获取到路由器时间为：" + format.format(new Date(routeTimeLong * 1000)) + "\n");
-            if (diff < 300) {
-                MainJFrame.showMssageln("智能路由器系统时间误差为(精确到秒)：" + diff + ",小于误差要求5分钟（300秒)");
-            } else {
-                MainJFrame.showMssageln("智能路由器系统时间误差为(精确到秒)：" + diff + ",超出误差要求5分钟（300秒)");
-                return false;
-            }
-            connect.disconnect();
-        }
-
-        // 全部通过后测试完成，返回true
-        MainJFrame.showMssageln("WAN口和LAN口测试通过！");
         return true;
     }
 

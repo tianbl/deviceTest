@@ -26,8 +26,8 @@ public class GeneralSet extends JPanel {
     private static GeneralSet instance;
 
     private MainJFrame mainJFrame;
-    private JLabel gatewayIP_JLabel;
-    private JTextField gatewayIP_JTextField;
+    private JLabel deviceIP_JLabel;
+    private JTextField deviceIP_JTextField;
 
     private JLabel accompanyIP_JLabel;
     private JTextField accompanyIP_JText;
@@ -44,7 +44,6 @@ public class GeneralSet extends JPanel {
     //private String linkButton_title="";
     private JButton showClear_JButton;
     private JButton refresh_JButton;
-
 
 
     private JButton changeToHex;
@@ -111,21 +110,21 @@ public class GeneralSet extends JPanel {
 
             udpPort_JLabel = new JLabel("UDP通信端口");
             udpPort_JText = new JTextField();
-            udpPort_JLabel.setBounds(530,y,100,30);
-            udpPort_JText.setBounds(610,y,100,30);
+            udpPort_JLabel.setBounds(530, y, 100, 30);
+            udpPort_JText.setBounds(610, y, 100, 30);
             this.add(udpPort_JLabel);
             this.add(udpPort_JText);
         }
 
         {
             int y = 130;
-            gatewayIP_JLabel = new JLabel("设备IP");
-            gatewayIP_JLabel.setBounds(10, y, 50, 30);
-            gatewayIP_JTextField = new JTextField();
-            gatewayIP_JTextField.setText(Para.Gateway_IP);
-            gatewayIP_JTextField.setBounds(60, y, 100, 30);
-            this.add(gatewayIP_JLabel);
-            this.add(gatewayIP_JTextField);
+            deviceIP_JLabel = new JLabel("设备IP");
+            deviceIP_JLabel.setBounds(10, y, 50, 30);
+            deviceIP_JTextField = new JTextField();
+            deviceIP_JTextField.setText(Para.Gateway_IP);
+            deviceIP_JTextField.setBounds(60, y, 100, 30);
+            this.add(deviceIP_JLabel);
+            this.add(deviceIP_JTextField);
 
             //配测设备IP
             accompanyIP_JLabel = new JLabel("陪测设备IP");
@@ -179,7 +178,7 @@ public class GeneralSet extends JPanel {
 //				barcodeProducter.startProduct();
 
                 while (true) {
-					/*if(null==mainJFrame){
+                    /*if(null==mainJFrame){
 						mainJFrame = MainJFrame.getInstance();	//获取主框架单例
 					}*/
                     try {
@@ -217,7 +216,7 @@ public class GeneralSet extends JPanel {
                         if (null == mainJFrame) {
                             mainJFrame = MainJFrame.getInstance();    //获取主框架单例
                         }
-                        if (null != mainJFrame.telnetGateway(gatewayIP_JTextField.getText(), 23)) {
+                        if (null != mainJFrame.telnetGateway(deviceIP_JTextField.getText(), 23)) {
                             MainJFrame.showMssage("路由器连接成功\n");
                         }
                     }
@@ -231,7 +230,7 @@ public class GeneralSet extends JPanel {
                 } catch (UnknownHostException e) {
                     MainJFrame.showMssage("获取本机IP地址失败！\n");
                 }
-                String gip = gatewayIP_JTextField.getText();
+                String gip = deviceIP_JTextField.getText();
                 String loip = localIP_JTextField.getText();
                 if (gip.length() > 7 && loip.length() > 7) {
                     gip = gip.substring(0, 7);
@@ -291,36 +290,6 @@ public class GeneralSet extends JPanel {
         }
     }
 
-    public int getNumOfPing() {
-        String pingNum = numOfPing_JTextField.getText();
-        boolean isempty = (null == pingNum || "".equals(pingNum));
-        return isempty == true ? 0 : Integer.parseInt(pingNum);
-    }
-
-    public String getGateway_IP() {
-        return gatewayIP_JTextField.getText();
-    }
-
-    public String getLocal_IP() {
-        return localIP_JTextField.getText();
-    }
-
-    public String getAccompany_IP() {
-        return accompanyIP_JText.getText();
-    }
-
-    public String getDefaultgw_IP() {
-        return defaultgw_JTextField.getText();
-    }
-
-    public JTextField getUdpPort_JText() {
-        return udpPort_JText;
-    }
-
-    public void setUdpPort_JText(JTextField udpPort_JText) {
-        this.udpPort_JText = udpPort_JText;
-    }
-
     public Map<String, String> getQrCode_Info() {
         String qrcodeinfo = qrcode_JTextField.getText();
         if (null == qrcodeinfo || "".equals(qrcodeinfo)) {
@@ -360,7 +329,7 @@ public class GeneralSet extends JPanel {
 
         numOfPing_JTextField.setText(map.get("pingNum"));
         udpPort_JText.setText(map.get("udpPort"));
-        gatewayIP_JTextField.setText(map.get("routeGateIP"));
+        deviceIP_JTextField.setText(map.get("deviceIP"));
         accompanyIP_JText.setText(map.get("accompanyIP"));
         defaultgw_JTextField.setText(map.get("gatewayIP"));
         return true;
@@ -370,14 +339,13 @@ public class GeneralSet extends JPanel {
         Map<String, String> map = new HashMap();
         map.put("pingNum", numOfPing_JTextField.getText());
         map.put("udpPort", udpPort_JText.getText());
-        map.put("routeGateIP", gatewayIP_JTextField.getText());
+        map.put("deviceIP", deviceIP_JTextField.getText());
         map.put("accompanyIP", accompanyIP_JText.getText());
-        map.put("gatewayIP", defaultgw_JTextField.getText());
+        map.put("gatewayIP", defaultgw_JTextField.getText());   //公司网关
 
         ProgramDataManag.updateConf("deviceTest.conf", map);
         return true;
     }
-
 
     private void toHex() {
 //        String aid = plcTestAddr_JText.getText();
@@ -398,5 +366,37 @@ public class GeneralSet extends JPanel {
 //            MainJFrame.showMssageln("地址格式错误，或者已经转换成16进制，无需再次转换");
 //            e.printStackTrace();
 //        }
+    }
+
+    public int getNumOfPing() {
+        String pingNum = numOfPing_JTextField.getText();
+        boolean isempty = (null == pingNum || "".equals(pingNum));
+        return isempty == true ? 0 : Integer.parseInt(pingNum);
+    }
+
+    public String getDevice_IP() {
+        return deviceIP_JTextField.getText();
+    }
+
+    public String getLocal_IP() {
+        return localIP_JTextField.getText();
+    }
+
+    public String getAccompany_IP() {
+        return accompanyIP_JText.getText();
+    }
+
+    public String getDefaultgw_IP() {
+        return defaultgw_JTextField.getText();
+    }
+
+    public int getUdpPort() {
+        String udpPort = udpPort_JText.getText();
+        boolean isempty = (null == udpPort || "".equals(udpPort));
+        return isempty == true ? 0 : Integer.parseInt(udpPort);
+    }
+
+    public String getQrCodeString(){
+        return qrcode_JTextField.getText();
     }
 }

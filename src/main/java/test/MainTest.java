@@ -23,35 +23,15 @@ public class MainTest {
 //        } catch (UnknownHostException e) {
 //            e.printStackTrace();
 //        }
-//        message();
-        getmessageByte();
+        message();
+//        getmessageByte();
     }
 
     public static void message(){
-        String mac = "03 7D 00 00 02 00 C0 DC 6A FF FF FE 01 00 C0 DC " +
-                "6A 00 07 FA 76 65 72 5F 30 32 2D 30 39 2D 30 30 " +
-                "2D 30 31 00 00 00 00 00 00 00 00 00 00 00 00 00 " +
-                "00 00 00 00 31 34 30 32 32 34 32 31 00 00 00 00 " +
-                "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 " +
-                "00 00 00 00 76 65 72 5F 30 30 2D 30 30 2D 31 34 " +
-                "00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 " +
-                "00 00 00 00 E1 03 00 00 00 00 00 00 00 00 00 00";
-        String sn = "11 18 00 31 32 33 34 35 36 37 38 39 30 31 32 33 " +
-                "34 35 36 37 38 39 30 31 32 33 34";
-        String dekey = "1D 08 00 56 31 41 57 49 39 59 44";
-        String dak = "20 10 00 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50";
-        String tm = dak.replace(" ", "");
-        System.out.println(tm);
-
-        byte[] bytes = hexStringToBytes(tm);
-//        System.out.println(parseByte2HexStr(bytes));
-        ResMessage resMessage = new ResMessage(bytes);
-        System.out.println("type=="+resMessage.getType());
-        System.out.println("leng=="+resMessage.getLength());
-        System.out.println(" mac=="+resMessage.getMAC());
-        System.out.println("  sn=="+resMessage.getSN());
-        System.out.println("dkey=="+resMessage.getD_KEY());
-        System.out.println(" dak=="+resMessage.getDAK());
+        boolean islocal = false;
+        boolean islocal1 = true;
+        System.out.println(Boolean.getBoolean("true"));
+        System.out.println(String.valueOf(islocal1));
     }
 
     public static void getmessageByte(){

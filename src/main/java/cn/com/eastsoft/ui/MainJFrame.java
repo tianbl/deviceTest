@@ -16,6 +16,7 @@ import cn.com.eastsoft.ui.powerline.VersionUpdate;
 import cn.com.eastsoft.ui.powerline.ServerSet;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.ProgramDataManag;
+import test.SocketTest;
 
 //主界用于组织各个功能模块，各模块分开编写
 public class MainJFrame extends JFrame implements ActionListener {
@@ -32,6 +33,7 @@ public class MainJFrame extends JFrame implements ActionListener {
 
     private JPanel uiPanel;      //主功能节目布局在此panel上面
     private JTabbedPane jtab;    //个功能选项卡
+    private String[] deviceList = {"电力线适配器","电力线无线路由器","电力线无线无扩展器"};
     private DeviceTest deviceTest;
     private VersionUpdate gateUpdate;
     private ServerSet serverSet;
@@ -58,8 +60,9 @@ public class MainJFrame extends JFrame implements ActionListener {
 //				.getResource("logo.png")).getImage());
         {
             moduleItem = new JComboBox();
-            moduleItem.addItem("电力线适配器");
-            moduleItem.addItem("电力线无线路由器");
+            for(String str:deviceList){
+                moduleItem.addItem(str);
+            }
             selectmodule = new JButton("选择被测设备");
             moduleItem.setBounds(300, 300, 200, 30);
             selectmodule.setBounds(300, 350, 200, 30);
@@ -138,6 +141,10 @@ public class MainJFrame extends JFrame implements ActionListener {
                 //升级部分
                 gateUpdate = new VersionUpdate();
                 jtab.add(gateUpdate, "  3.固件更新   ");
+
+                ///开发时测试
+                SocketTest socketTest = new SocketTest();
+                jtab.add(socketTest,"  udp报文测试 ");
 
                 //jtab.setEnabledAt(0, false);
                 deviceTest.set_module(moduleItem.getSelectedIndex());

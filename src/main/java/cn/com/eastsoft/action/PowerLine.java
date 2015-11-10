@@ -1,18 +1,24 @@
 package cn.com.eastsoft.action;
 
+import cn.com.eastsoft.sql.ServerInfo;
 import cn.com.eastsoft.ui.MainJFrame;
+import cn.com.eastsoft.ui.powerline.GeneralSet;
+import cn.com.eastsoft.ui.powerline.ServerSet;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.Ping;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 
 /**
  * Created by tianbaolei on 15-11-9.
  */
 public abstract class PowerLine{
 
+    protected ServerSet serverSet;
+    protected GeneralSet generalSet;
 
     public boolean wan_Lan_test(){
         MainJFrame.showMssage("电力线动作基类实现");
@@ -60,7 +66,7 @@ public abstract class PowerLine{
      * 信息设置
      * @return
      */
-    public boolean info_set(){
+    public boolean info_set(Map<String,String> qrcodeInfo){
         MainJFrame.showMssage("电力线动作基类实现");
         return false;
     }

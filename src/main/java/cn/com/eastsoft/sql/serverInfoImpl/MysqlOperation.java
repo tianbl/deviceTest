@@ -16,16 +16,23 @@ import cn.com.eastsoft.ui.powerline.ServerSet;
 
 public class MysqlOperation implements ServerInfo {
 	private Connection conn = null;
-	private String user;
+
+    private String ip;
+    private String port;
+    private String user;
 	private String password;
-	private String jdbc;
-	private String port;
+	private String database;
+
+    private String jdbc;
 	
-	public MysqlOperation(String ip,String usrname,String passwd){
-		this.user = usrname;
-		this.password = passwd;
+	public MysqlOperation(){
+        ServerSet serverSet = ServerSet.getInstance();
+        this.ip = serverSet.getServerIP();
+		this.user = serverSet.getUSername();
+		this.password = serverSet.getPasswd();
 		this.port = ServerSet.getInstance().getPort();
-		this.jdbc = "jdbc:mysql://"+ip+":"+port+"/enterprise?user="
+		this.database = ServerSet.getInstance().getDatabase();
+		this.jdbc = "jdbc:mysql://"+ip+":"+port+"/"+database+"?user="
 				+ user+"&password="+password+"&useUnicode=true&characterEncoding=UTF8";
 	}
 	public boolean open(){
@@ -71,12 +78,18 @@ public class MysqlOperation implements ServerInfo {
 			close();
 		}
 	}
-	
+
+    /**
+     * 查询 mac_snkey表的内容
+     * @param column 查询使用的列名
+     * @param value 查询使用的列名值
+     * @return
+     */
 	@Override
 	public Map<String,Object> getServerInfo(String column,String value){
 	
 //		String[] formate={"id","sn","mac_label","gid","pwd","produce","devicekey","mac_3","mac_5","mac_6"};
-		String[] formate={"id","sn","MAClabel","gid","pwd","produce","devicekey","mac_3","mac_5","mac_6"};
+		String[] formate={"id","sn","MAClabel","gid","pwd","devicekey","mac_1","mac_3","mac_5","mac_6"};
 		StringBuffer sb = new StringBuffer();
 		for(String str:formate){
 			sb.append(str+",");

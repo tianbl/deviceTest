@@ -1,35 +1,87 @@
 package cn.com.eastsoft.action.powerlineImpl;
 
 import cn.com.eastsoft.action.PowerLine;
+import cn.com.eastsoft.sql.ServerInfo;
+import cn.com.eastsoft.sql.serverInfoImpl.MysqlOperation;
+import cn.com.eastsoft.sql.serverInfoImpl.XlsOperation;
 import cn.com.eastsoft.ui.MainJFrame;
+import cn.com.eastsoft.ui.powerline.GeneralSet;
+import cn.com.eastsoft.ui.powerline.ServerSet;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.Ping;
 import cn.com.eastsoft.util.XmlManager;
 
 import javax.swing.*;
+import java.util.Map;
 
 /**
  * Created by tianbaolei on 15-11-9.
  */
-public class PowerLineWirelessRoute extends PowerLine {
+public class WirelessRouteAndExpander extends PowerLine {
 
     @Override
-    public boolean info_set() {
-
+    public boolean info_set(Map<String,String> qrcodeInfo) {
         MainJFrame.showMssageln("电力线无线路由器 信息设置");
+
+        String[] formate={"id","sn","MAClabel","gid","pwd","devicekey","mac_1","mac_3","mac_5","mac_6"};
+        ServerInfo serverInfo = null;
+        if(ServerSet.getInstance().isLocalSelected()){
+            serverInfo = new XlsOperation(ServerSet.getInstance().getRealPath());
+        }else {
+            serverInfo = new MysqlOperation();
+        }
+        Map map = serverInfo.getServerInfo("sn",GeneralSet.getInstance().getQrCodeString());
+        int count = 0;
+        for(String str:formate){
+            MainJFrame.showMssage(str+"=="+map.get(str)+",");
+            if((++count)%4==0){
+                MainJFrame.showMssage("\n");
+            }
+        }
+        MainJFrame.showMssage("\n");
+
+        String macSetCom = "link set "+"xx:xx:xx:xx:xx:xx";
+        String snSetCom = "snkey set --sn="+"123456781234567812345678";
+        String d_key = "snkey set --dkey="+"12345678";
         return false;
     }
 
     @Override
     public boolean wan_Lan_test() {
-        MainJFrame.showMssageln("电力线无线路由器 wan口和lan口设置");
-        return false;
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>.WAN口和LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        generalSet = GeneralSet.getInstance();
+        int numOfping = generalSet.getNumOfPing();
+        String[] targetIP = {generalSet.getDevice_IP(),generalSet.getDefaultgw_IP()};
+        String[] title = {"电力线适配器IP", "公司网关"};
+        for (int i = 0; i < targetIP.length; i++) {
+            MainJFrame.showMssage(title[i] + "连通性测试    ");
+            if (true == Ping.ping(targetIP[i], numOfping, 3000)) {
+                MainJFrame.showMssageln(title[i] + "ping测试通过！\n");
+            } else {
+                MainJFrame.showMssageln(title[i] + "ping测试不通过\n");
+                return false;
+            }
+        }
+
+        // 全部通过后测试完成，返回true
+        MainJFrame.showMssageln("WAN口和LAN口测试通过！");
+        return true;
     }
 
     @Override
     public boolean carrier_test() {
         MainJFrame.showMssageln("电力线无线路由器 载波测试");
-        return false;
+        generalSet = GeneralSet.getInstance();
+        int numOfping = generalSet.getNumOfPing();
+        String pingIP = generalSet.getAccompany_IP();
+        MainJFrame.showMssage("载波测试");
+        if (true == Ping.ping(pingIP, numOfping, 3000)) {
+            MainJFrame.showMssageln("载波测试通过！\n");
+        } else {
+            MainJFrame.showMssageln("载波测试不通过\n");
+            return false;
+        }
+        return true;
     }
 
     @Override
