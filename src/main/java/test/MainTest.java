@@ -1,6 +1,9 @@
 package test;
 
+import cn.com.eastsoft.action.plMessage.ReqMessage;
+import cn.com.eastsoft.action.plMessage.ResMessage;
 import cn.com.eastsoft.ui.Para;
+import org.omg.CORBA.SystemException;
 
 import java.io.*;
 import java.util.Properties;
@@ -17,8 +20,9 @@ public class MainTest {
     public static String ip;
     public static String[] labelInfoKey;
     public static void main(String[] args){
-        regexTest();
+//        regexTest();
 //        readProperties();
+        reqTest();
     }
 
     public static void regexTest(){
@@ -42,6 +46,12 @@ public class MainTest {
 //        map.put("pwd", matcher.group(6));
     }
 
+    public static void reqTest(){
+
+        int mh = 58;
+        System.out.println("冒号=="+(char)mh);
+    }
+
     public static String parseByte2HexStr(byte buf[]) {
         StringBuffer sb = new StringBuffer();
         for (int i = 0; i < buf.length; i++) {
@@ -53,12 +63,6 @@ public class MainTest {
         }
         return sb.toString();
     }
-    /**
-     * Convert hex string to byte[]
-     *
-     * @param hexString the hex string
-     * @return byte[]
-     */
     public static byte[] hexStringToBytes(String hexString) {
         if (hexString == null || hexString.equals("")) {
             return null;

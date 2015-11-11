@@ -80,22 +80,16 @@ public class SocketTest extends JPanel implements ActionListener {
 
     public byte[] sendMessage(String com) {
         GeneralSet generalSet = GeneralSet.getInstance();
-        try {
-            UDPClient udpClient = UDPClient.getInstance();
-            byte[] bytes = udpClient.sendPacket(generalSet.getDevice_IP(), 10000, ReqMessage.hexStringToBytes(com));
-            byte[] lenbyte = new byte[2];
-            lenbyte[0] = bytes[2];
-            lenbyte[1] = bytes[1];
-            int length = Integer.parseInt(ResMessage.parseByte2HexStr(lenbyte, 0, 2), 16);
-            byte[] bt = new byte[3+length];
-            for(int i=0;i<3+length;i++){
-                bt[i]=bytes[i];
-            }
-            MainJFrame.showMssageln("收到报文："+ResMessage.parseByte2HexStr(bt,0,bt.length));
-            return bytes;
-        } catch (IOException e1) {
-            e1.printStackTrace();
+        UDPClient udpClient = UDPClient.getInstance();
+        byte[] bytes = udpClient.sendPacket(generalSet.getDevice_IP(), 10000, ReqMessage.hexStringToBytes(com));
+        byte[] lenbyte = new byte[2];
+        lenbyte[0] = bytes[2];
+        lenbyte[1] = bytes[1];
+        int length = Integer.parseInt(ResMessage.parseByte2HexStr(lenbyte, 0, 2), 16);
+        byte[] bt = new byte[3 + length];
+        for (int i = 0; i < 3 + length; i++) {
+            bt[i] = bytes[i];
         }
-        return null;
+        return bytes;
     }
 }

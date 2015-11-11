@@ -67,8 +67,8 @@ public abstract class PowerLine{
      * @return
      */
     public boolean info_set(Map<String,String> qrcodeInfo){
-        MainJFrame.showMssage("电力线动作基类实现");
-        return false;
+        MainJFrame.showMssage("当前设备无需测试该项目");
+        return true;
     }
 
     public boolean carrier_test(){

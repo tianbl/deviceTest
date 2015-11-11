@@ -72,14 +72,10 @@ public class ReqMessage {
 
     public void setType(String type) {
         this.type = type;
-    }
 
-    public int getContentlen() {
-        return contentlen;
-    }
-
-    public void setContentlen(int contentlen) {
-        this.contentlen = contentlen;
+        if(content!=null&&type!=null&&"0E".equals(type)){
+            contentlen = hexStringToBytes(content).length;
+        }
     }
 
     public String getContent() {
@@ -88,5 +84,10 @@ public class ReqMessage {
 
     public void setContent(String content) {
         this.content = content;
+        if(type!=null&&"0E".equals(type)){
+            contentlen = hexStringToBytes(content).length;
+        }else {
+            contentlen = content.length();
+        }
     }
 }

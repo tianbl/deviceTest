@@ -1,6 +1,9 @@
 package cn.com.eastsoft.action.powerlineImpl;
 
 import cn.com.eastsoft.action.PowerLine;
+import cn.com.eastsoft.action.plMessage.ReqMessage;
+import cn.com.eastsoft.action.plMessage.ResMessage;
+import cn.com.eastsoft.socket.UDPClient;
 import cn.com.eastsoft.sql.ServerInfo;
 import cn.com.eastsoft.sql.serverInfoImpl.MysqlOperation;
 import cn.com.eastsoft.sql.serverInfoImpl.XlsOperation;
@@ -30,21 +33,57 @@ public class PowerAdapter extends PowerLine{
         }else {
             serverInfo = new MysqlOperation();
         }
-        Map map = serverInfo.getServerInfo("sn",GeneralSet.getInstance().getQrCodeString());
-        int count = 0;
-        for(String str:formate){
-            MainJFrame.showMssage(str+"=="+map.get(str)+",");
-            if((++count)%4==0){
-                MainJFrame.showMssage("\n");
+        Map deviceInfo = serverInfo.getServerInfo("sn",GeneralSet.getInstance().getQrCodeString());
+
+        MainJFrame.showMssageln("开始进行信息设置...");
+        //获取udp客户端
+        UDPClient udpClient = UDPClient.getInstance();
+        generalSet = GeneralSet.getInstance();
+        int port = generalSet.getUdpPort();
+
+        String[] infoKey = {"mac_1","sn","devicekey","pwd"};
+        String[] messageType = {"0E","0F","1B","1E"};
+        ReqMessage reqMessage = new ReqMessage();
+        for(int i=0;i<messageType.length;i++){
+            String contenet = deviceInfo.get(infoKey[i]).toString();
+            reqMessage.setType(messageType[i]);
+            reqMessage.setContent(contenet);
+            byte[] send = reqMessage.getMessage();
+            MainJFrame.showMssageln("设置信息内容："+contenet+"\n" +
+                    "发送报文："+ResMessage.parseByte2HexStr(send,0,send.length));
+            byte[] receive = sendMessage(udpClient, generalSet.getDevice_IP(), port, send);
+            MainJFrame.showMssageln("收到报文："+ResMessage.parseByte2HexStr(receive,0,receive.length));
+            if("00010001".equals(ResMessage.parseByte2HexStr(receive, 0, 4))){
+                MainJFrame.showMssageln(infoKey[i]+"设置成功");
+
             }
         }
-        MainJFrame.showMssage("\n");
-        return false;
+
+        MainJFrame.showMssageln("");
+        //查询设置的信息是否正确  mac、sn、d-key、dak
+        MainJFrame.showMssageln("对设置的信息进行检查...");
+        byte[][] queryMessage = {{0x02,0x00,0x00},{0x10,0x00,0x00},
+                {0x1C,0x00,0x00},{0x1F,0x00,0x00}};
+        for(int i=0;i<queryMessage.length;i++){
+            MainJFrame.showMssageln("发送"+infoKey[i]+"查询报文"+
+                    ResMessage.parseByte2HexStr(queryMessage[i],0,queryMessage[i].length));
+            byte[] receive = sendMessage(udpClient, generalSet.getDevice_IP(), port, queryMessage[i]);
+            MainJFrame.showMssageln("收到报文："+ResMessage.parseByte2HexStr(receive,0,receive.length));
+            ResMessage resMessage = new ResMessage(receive);
+            if(resMessage.queryRes.equals(deviceInfo.get(infoKey[i]))){
+                MainJFrame.showMssageln(infoKey[i]+"设置正确");
+            }else {
+                MainJFrame.showMssageln(resMessage.queryRes+"==="+deviceInfo.get(infoKey[i]));
+                return false;
+            }
+        }
+        MainJFrame.showMssageln("信息设置完成");
+        return true;
     }
 
     @Override
     public boolean wan_Lan_test() {
-        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>.WAN口和LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>.LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
         generalSet = GeneralSet.getInstance();
         int numOfping = GeneralSet.getInstance().getNumOfPing();
@@ -85,5 +124,19 @@ public class PowerAdapter extends PowerLine{
             return false;
         }
         return true;
+    }
+
+    public byte[] sendMessage(UDPClient udpClient,String ip,int port,byte[] sendBuf) {
+        byte[] bytes = udpClient.sendPacket(ip, port, sendBuf);
+        byte[] lenbyte = new byte[2];
+        lenbyte[0] = bytes[2];
+        lenbyte[1] = bytes[1];
+        int length = Integer.parseInt(ResMessage.parseByte2HexStr(lenbyte, 0, 2), 16);
+//        MainJFrame.showMssageln("接收到数据长度："+length);
+        byte[] bt = new byte[3 + length];
+        for (int i = 0; i < 3 + length; i++) {
+            bt[i] = bytes[i];
+        }
+        return bt;
     }
 }

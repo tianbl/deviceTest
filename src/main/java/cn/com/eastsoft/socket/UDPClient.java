@@ -5,6 +5,8 @@ package cn.com.eastsoft.socket; /**
  * @version 2008-12-15
  */
 
+import cn.com.eastsoft.ui.MainJFrame;
+
 import java.io.*;
 import java.net.*;
 
@@ -36,7 +38,7 @@ public class UDPClient {
         return instance;
     }
 
-    public byte[] sendPacket(String IP, int port, byte[] sendBuf) throws IOException {
+    public byte[] sendPacket(String IP, int port, byte[] sendBuf){
 
         byte[] receByte = null;
         try {
@@ -61,7 +63,11 @@ public class UDPClient {
             receByte = recvPacket.getData();
             System.out.println("收到数据:");
         } catch (Exception e) {
-            e.printStackTrace();
+            if(e.getMessage().contains("timed out")){
+                MainJFrame.showMssageln("报文传输超时...");
+            }else {
+                e.printStackTrace();
+            }
         } finally {
             return receByte;
         }

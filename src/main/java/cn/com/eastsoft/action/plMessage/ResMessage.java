@@ -10,8 +10,7 @@ public class ResMessage {
     private String SN;
     private String D_KEY;
     private String DAK;
-
-
+    public String queryRes;
 
     public ResMessage(byte[] bytes){
         type = parseByte2HexStr(bytes,0,1);
@@ -23,12 +22,16 @@ public class ResMessage {
 
         if("03".equals(type)){      //get mac
             MAC = parseByte2HexStr(bytes,6,6);
+            queryRes = MAC;
         }else if("11".equals(type)){    //get sn
             SN = asciiToStr(bytes,3,length);
+            queryRes = SN;
         }else if("1D".equals(type)){    //get d_key
             D_KEY = asciiToStr(bytes, 3, length);
+            queryRes = D_KEY;
         }else if("20".equals(type)){    //get dak
             DAK = asciiToStr(bytes, 3, length);
+            queryRes = DAK;
         }
     }
 
