@@ -52,7 +52,7 @@ public class VersionUpdate extends JPanel implements ActionListener{
 			gatewayIP_JTextField.setBounds(130, 10, 100, 30);
 			this.add(gatewayIP_JLabel);
 			this.add(gatewayIP_JTextField);
-			gatewayIP_JTextField.setText(Para.Gateway_IP);
+//			gatewayIP_JTextField.setText(Para.Gateway_IP);
 			
 			localIP_JLabel = new JLabel("本机IP");
 			localIP_JTextField = new JTextField();

@@ -1,60 +1,45 @@
 package test;
 
-import akka.actor.ActorRef;
-import akka.actor.ActorSystem;
-import akka.actor.Props;
-import akka.io.Udp;
-import cn.com.eastsoft.action.plMessage.ReqMessage;
-import cn.com.eastsoft.action.plMessage.ResMessage;
+import cn.com.eastsoft.ui.Para;
 
 import java.io.*;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.util.Properties;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by tianbaolei on 15-11-5.
  */
 public class MainTest {
+    public static String regex;
+    public static String sn;
+    public static String mac;
+    public static String ip;
+    public static String[] labelInfoKey;
     public static void main(String[] args){
-//        try {
-//            udpClient();
-//        } catch (UnknownHostException e) {
-//            e.printStackTrace();
-//        }
-        message();
-//        getmessageByte();
+        regexTest();
+//        readProperties();
     }
 
-    public static void message(){
-        boolean islocal = false;
-        boolean islocal1 = true;
-        System.out.println(Boolean.getBoolean("true"));
-        System.out.println(String.valueOf(islocal1));
-    }
+    public static void regexTest(){
 
-    public static void getmessageByte(){
-        ReqMessage reqMessage = new ReqMessage();
-//        reqMessage.setType("0E");
-//        reqMessage.setContentlen(6);
-//        reqMessage.setContent("C0DC6AFFFFFE");
+        regex = "(IP[:]{0,1})" +
+                "(((2[0-4]\\d|25[0-5]|[01]?\\d\\d?)\\.){3}(2[0-4]\\d|25[0-5]|[01]?\\d\\d?))" +
+                "([' ']{0,4}MAC[:]{0,1})([1-9A-F]{12})([SN/' '\\r'\\n']{1,8})(\\d{6})$";
+        String qrcodeinfo = "IP:191.169.1.108MAC:AABBCCDDEEFF S/N123456";
+        Para.setRex(0);
+        Pattern pattern = Pattern.compile(Para.labelInfoRex);
+        Matcher matcher = pattern.matcher(qrcodeinfo);
+        matcher.find();
+        int num = matcher.groupCount();
+        System.out.println("匹配数："+num);
 
-        reqMessage.setType("0F");
-        reqMessage.setContentlen(24);
-        reqMessage.setContent("123456789012345678901234");
-
-        reqMessage.setType("1E");
-        reqMessage.setContentlen(16);
-        reqMessage.setContent("ABCDEFGHIJKLMNOP");
-
-        byte[] bytes = reqMessage.getMessage();
-        String sn = "1E 10 00 41 42 43 44 45 46 47 48 49 4A 4B 4C 4D 4E 4F 50";
-        sn = sn.replace(" ","");
-        System.out.println(parseByte2HexStr(bytes));
-        System.out.println(sn);
-
-        System.out.println(sn.equals(parseByte2HexStr(bytes)));
+        for(int i=1;i<=num;i++){
+            System.out.println(i+"："+matcher.group(i));
+        }
+//        map.put("sn", matcher.group(2));
+//        map.put("gid", matcher.group(4));
+//        map.put("pwd", matcher.group(6));
     }
 
     public static String parseByte2HexStr(byte buf[]) {
@@ -92,24 +77,6 @@ public class MainTest {
         return (byte) "0123456789ABCDEF".indexOf(c);
     }
 
-    public static void udpClient() throws UnknownHostException {
-        ActorSystem mySystem = ActorSystem.create("mySystem");
-        ActorRef udp = Udp.get(mySystem).getManager();
-
-//        InetAddress inetAddress = InetAddress.getByAddress();
-        InetSocketAddress inetSocketAddress = new InetSocketAddress("129.1.18.189",8080);
-//        Props props = Props.create(Listener.class,udp);
-//        ActorRef actorRef = mySystem.actorOf(props,"sender");
-//        actorRef.tell("12312312", actorRef);
-
-//        Props props = Props.create(Connected.class,inetSocketAddress);
-//        ActorRef actorRef = mySystem.actorOf(props,"sender");
-
-//        Props props = Props.create(SimpleSender.class,inetSocketAddress);
-//        ActorRef actorRef = mySystem.actorOf(props,"sender");
-
-    }
-
     public static void readProperties(){
         System.out.println("starting...");
         try {
@@ -120,8 +87,12 @@ public class MainTest {
             InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
             Properties properties = new Properties();
             properties.load(inputStream);
-            System.out.println("jdbc.driver"+properties.getProperty("jdbc.driver"));
-            System.out.println("regex="+properties.getProperty("regex1"));
+            String[] key = properties.getProperty("powerlineAdapter.labelInfoKey").split("-");
+            Para.setRex(0);
+            System.out.println("labelinfo：" + Para.labelInfoRex);
+            for (String str:key){
+                System.out.println(str+"："+ Para.mapRex.get(str));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,6 +1,5 @@
 package cn.com.eastsoft.ui.powerline;
 
-import java.awt.CheckboxGroup;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.net.InetAddress;
@@ -12,11 +11,11 @@ import java.util.regex.Pattern;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import cn.com.eastsoft.ui.MainJFrame;
+import cn.com.eastsoft.ui.Para;
 import cn.com.eastsoft.util.ProgramDataManag;
 import cn.com.eastsoft.scanningGun.barcode.BarcodeBuffer;
 import cn.com.eastsoft.scanningGun.barcode.BarcodeProducter;
@@ -121,7 +120,7 @@ public class GeneralSet extends JPanel {
             deviceIP_JLabel = new JLabel("设备IP");
             deviceIP_JLabel.setBounds(10, y, 50, 30);
             deviceIP_JTextField = new JTextField();
-            deviceIP_JTextField.setText(Para.Gateway_IP);
+//            deviceIP_JTextField.setText(Para.Gateway_IP);
             deviceIP_JTextField.setBounds(60, y, 100, 30);
             this.add(deviceIP_JLabel);
             this.add(deviceIP_JTextField);
@@ -129,7 +128,7 @@ public class GeneralSet extends JPanel {
             //配测设备IP
             accompanyIP_JLabel = new JLabel("陪测设备IP");
             accompanyIP_JLabel.setBounds(170, y, 60, 30);
-            accompanyIP_JText = new JTextField(Para.accompany_IP);
+            accompanyIP_JText = new JTextField();
             accompanyIP_JText.setBounds(240, y, 100, 30);
             this.add(accompanyIP_JLabel);
             this.add(accompanyIP_JText);
