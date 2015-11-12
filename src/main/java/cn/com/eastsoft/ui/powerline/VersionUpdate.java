@@ -17,6 +17,7 @@ import javax.swing.JTextField;
 
 import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.util.Connect;
+import cn.com.eastsoft.util.Ping;
 import cn.com.eastsoft.util.ProgramDataManag;
 
 //网关升级部分
@@ -153,14 +154,10 @@ public class VersionUpdate extends JPanel implements ActionListener{
 			}catch (UnknownHostException e){
 				MainJFrame.showMssage("获取本机IP地址失败！\n");
 			}
-			String gip = gatewayIP_JTextField.getText();
-			String loip = localIP_JTextField.getText();
-			if(gip.length()>7&&loip.length()>7){
-				gip = gip.substring(0, 7);
-				loip = loip.substring(0, 7);
-			}
-			if(!gip.equals(loip)){
-				MainJFrame.showMssageln("本机和网关不再同一网段...");
+			String ip1 = gatewayIP_JTextField.getText();
+			String ip2 = localIP_JTextField.getText();
+			if (!Ping.isSameSegment(ip1, ip2)) {
+				MainJFrame.showMssageln("本机IP和设备不再同一网段！");
 			}
 		}
 	}

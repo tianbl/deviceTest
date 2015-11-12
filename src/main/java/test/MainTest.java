@@ -1,8 +1,14 @@
 package test;
 
+import cn.com.eastsoft.action.plMessage.ExtenderRes;
 import cn.com.eastsoft.action.plMessage.ReqMessage;
 import cn.com.eastsoft.action.plMessage.ResMessage;
 import cn.com.eastsoft.ui.Para;
+import cn.com.eastsoft.util.Ping;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
 import org.omg.CORBA.SystemException;
 
 import java.io.*;
@@ -22,7 +28,11 @@ public class MainTest {
     public static void main(String[] args){
 //        regexTest();
 //        readProperties();
-        reqTest();
+        try {
+            reqTest();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void regexTest(){
@@ -46,10 +56,16 @@ public class MainTest {
 //        map.put("pwd", matcher.group(6));
     }
 
-    public static void reqTest(){
+    public static void reqTest() throws Exception {
 
-        int mh = 58;
-        System.out.println("冒号=="+(char)mh);
+        String data = "9F 91 1E 00 00 01 04 C0 A8 01 FD " +
+                "06 00 10 2C 5F 12 1C 0F 45 61 73 74 73 6F 66 74 5F 30 30 30 30 30 30 5F 1F";
+        byte[] rece = ReqMessage.hexStringToBytes(data.replace(" ",""));
+        ExtenderRes res = new ExtenderRes(rece);
+        System.out.println(res.getIp());
+        System.out.println(res.getMac());
+        System.out.println(res.getSsid());
+
     }
 
     public static String parseByte2HexStr(byte buf[]) {

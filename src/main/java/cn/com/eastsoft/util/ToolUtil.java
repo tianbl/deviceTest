@@ -135,7 +135,7 @@ public class ToolUtil
 	
 	/**
      * 读取txt文件的内容
-     * @param file 想要读取的文件对象
+     * @param fileName 想要读取的文件路径
      * @return 返回文件内容
      */
     public static String txt2String(String fileName){
@@ -171,8 +171,17 @@ public class ToolUtil
             e.printStackTrace();
             return false;
         }
-
     }
+
+	public static String getNowPath() {
+		File directory = new File(".");
+		try {
+			return directory.getCanonicalPath()+"/";
+		} catch (Exception exp) {
+			exp.printStackTrace();
+			return null;
+		}
+	}
         
 	public static void main(String[] args)
 	{

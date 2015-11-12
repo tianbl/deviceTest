@@ -19,6 +19,7 @@ import cn.com.eastsoft.action.powerlineImpl.WirelessRouteAndExpander;
 import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.sql.ServerInfo;
 import cn.com.eastsoft.util.Connect;
+import cn.com.eastsoft.util.Ping;
 
 //网关测试部分
 public class DeviceTest extends JPanel {
@@ -86,14 +87,8 @@ public class DeviceTest extends JPanel {
         }
 
         MainJFrame.showMssageln("程序当运行路径：" + getNowPath());
-        String gip = generalSet.getDevice_IP();
-        String loip = generalSet.getLocal_IP();
-        if (gip.length() > 7 && loip.length() > 7) {
-            gip = gip.substring(0, 7);
-            loip = loip.substring(0, 7);
-        }
-        if (!gip.equals(loip)) {
-            MainJFrame.showMssageln("本机和网关不再同一网段");
+        if (!Ping.isSameSegment(generalSet.getDevice_IP(),generalSet.getLocal_IP())) {
+            MainJFrame.showMssageln("本机IP和设备不再同一网段！");
         }
     }
 
@@ -101,19 +96,24 @@ public class DeviceTest extends JPanel {
 
         System.out.println(selectModule);
         //设置选择的设备
-        if(selectModule==0){
+        if(0==selectModule){
             powerLine = new PowerAdapter();
             signalTest_JButton[3].setVisible(false);
             generalSet.udpPort_JText.setVisible(true);
             generalSet.udpPort_JLabel.setVisible(true);
             System.out.println(selectModule+"选择电力线适配器");
-        }else if(selectModule==1){
+        }else if(1==selectModule){
             powerLine = new WirelessRouteAndExpander();
             signalTest_JButton[3].setVisible(true);
-
             generalSet.udpPort_JText.setVisible(false);
             generalSet.udpPort_JLabel.setVisible(false);
-            System.out.println(selectModule+"选择电力线无线路由器");
+            MainJFrame.showMssageln(selectModule + "选择电力线无线路由器");
+        }else if(2==selectModule){
+            powerLine = new WirelessRouteAndExpander();
+            signalTest_JButton[3].setVisible(true);
+            generalSet.udpPort_JText.setVisible(false);
+            generalSet.udpPort_JLabel.setVisible(false);
+            MainJFrame.showMssageln(selectModule + "选择电力线无线扩展器");
         }
     }
 

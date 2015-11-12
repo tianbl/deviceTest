@@ -147,7 +147,7 @@ public class MainJFrame extends JFrame implements ActionListener {
                 jtab.add(socketTest,"  udp报文测试 ");
 
                 //jtab.setEnabledAt(0, false);
-                deviceTest.set_module(moduleItem.getSelectedIndex());
+//                deviceTest.set_module(moduleItem.getSelectedIndex());
             }
 
             uiPanel = new JPanel();
@@ -168,6 +168,7 @@ public class MainJFrame extends JFrame implements ActionListener {
             initPowerLineUI();
             uiPanel.setVisible(true);
         }else{
+            initPowerLineUI();
             uiPanel.setVisible(true);
         }
         deviceTest.set_module(moduleItem.getSelectedIndex());
@@ -204,7 +205,7 @@ public class MainJFrame extends JFrame implements ActionListener {
         jTextArea_View.setText("");
     }
 
-    public DeviceTest getGatewayTest() {
+    public DeviceTest getDeviceTest() {
         return deviceTest;
     }
 }

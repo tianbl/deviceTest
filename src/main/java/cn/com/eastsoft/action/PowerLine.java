@@ -20,6 +20,10 @@ public abstract class PowerLine{
     protected ServerSet serverSet;
     protected GeneralSet generalSet;
 
+    public PowerLine(){
+        generalSet = GeneralSet.getInstance();
+    }
+
     public boolean wan_Lan_test(){
         MainJFrame.showMssage("电力线动作基类实现");
         MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>1.WAN口和LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
@@ -76,7 +80,7 @@ public abstract class PowerLine{
         return false;
     }
     public boolean wifi_test(){
-        MainJFrame.showMssage("电力线动作基类实现");
+        MainJFrame.showMssage("当前设备无需实现wifi测试");
         return false;
     }
 }

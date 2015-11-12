@@ -264,13 +264,22 @@ public class Ping{
 		}
 		return null;
     }
-    
+
+	public static boolean isSameSegment(String ip1,String ip2){
+		boolean isSameNet = false;
+		if(!(ip1==null||"".equals(ip1)||ip2==null||"".equals(ip2))){
+			int index1 = ip1.indexOf('.',ip1.indexOf('.')+1);
+			int index2 = ip2.indexOf('.',ip2.indexOf('.')+1);
+			String net1 = ip1.substring(0,index1);
+			String net2 = ip2.substring(0,index2);
+//			System.out.println("index1=="+index1+" net1=="+net1);
+//			System.out.println("index2=="+index2+" net2=="+net2);
+			isSameNet = net1.equals(net2);
+		}
+		return isSameNet;
+	}
+
     public static void main(String[] args){
-    	for(int i=0;i<3;i++){
-    		if(null!=getWifiIP("192.168.1.2")){
-    			System.out.println(getWifiIP("192.168.1.2"));
-    			break;
-    		}
-    	}
+    	isSameSegment("129.1.18.29","129.1.12.122");
     }
 }

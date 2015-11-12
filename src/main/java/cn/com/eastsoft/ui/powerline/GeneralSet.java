@@ -189,7 +189,7 @@ public class GeneralSet extends JPanel {
                         Map map = getQrCode_Info();
                         MainJFrame.showMssage("解析得到标签信息如下\n" +
                                 "sn:" + map.get("sn") + " gid:" + map.get("gid") + " pwd:" + map.get("pwd") + "\n");
-                        MainJFrame.getInstance().getGatewayTest().allTest();
+                        MainJFrame.getInstance().getDeviceTest().allTest();
                         //Thread.sleep(2000);
                         qrcode_JTextField.setText("");
                     } catch (InterruptedException e) {
