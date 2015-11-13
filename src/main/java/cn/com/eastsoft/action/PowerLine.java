@@ -2,6 +2,7 @@ package cn.com.eastsoft.action;
 
 import cn.com.eastsoft.sql.ServerInfo;
 import cn.com.eastsoft.ui.MainJFrame;
+import cn.com.eastsoft.ui.powerline.ConnectParamSet;
 import cn.com.eastsoft.ui.powerline.GeneralSet;
 import cn.com.eastsoft.ui.powerline.ServerSet;
 import cn.com.eastsoft.util.Connect;
@@ -19,9 +20,11 @@ public abstract class PowerLine{
 
     protected ServerSet serverSet;
     protected GeneralSet generalSet;
+    protected ConnectParamSet connectParamSet;
 
     public PowerLine(){
         generalSet = GeneralSet.getInstance();
+        connectParamSet = ConnectParamSet.getInstance();
     }
 
     public boolean wan_Lan_test(){

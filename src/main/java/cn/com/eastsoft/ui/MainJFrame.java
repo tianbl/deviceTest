@@ -10,10 +10,7 @@ import java.awt.event.WindowEvent;
 import javax.swing.*;
 import javax.swing.border.TitledBorder;
 
-import cn.com.eastsoft.ui.powerline.GeneralSet;
-import cn.com.eastsoft.ui.powerline.DeviceTest;
-import cn.com.eastsoft.ui.powerline.VersionUpdate;
-import cn.com.eastsoft.ui.powerline.ServerSet;
+import cn.com.eastsoft.ui.powerline.*;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.ProgramDataManag;
 import test.SocketTest;
@@ -37,6 +34,7 @@ public class MainJFrame extends JFrame implements ActionListener {
     private DeviceTest deviceTest;
     private VersionUpdate gateUpdate;
     private ServerSet serverSet;
+    private ConnectParamSet connectParamSet;
 
     public static MainJFrame getInstance() {
         if (instance == null) {
@@ -85,10 +83,11 @@ public class MainJFrame extends JFrame implements ActionListener {
                 public void windowClosing(WindowEvent e) {
                     System.out.println("触发windowClosing事件");
 
-                    if(uiPanel!=null){
+                    if (uiPanel != null) {
                         ProgramDataManag.deleteConf("deviceTest.conf");
                         serverSet.saveVersion();
                         gateUpdate.saveVersion();
+                        connectParamSet.saveVersion();
                         GeneralSet.getInstance().saveVersion();
                         GeneralSet.getInstance().stopProduct();
                     }
@@ -99,12 +98,6 @@ public class MainJFrame extends JFrame implements ActionListener {
                 }
             });
         }
-    }
-
-    public void switchWindow() {
-        System.out.println("切换回到设备选择窗口");
-        uiPanel.setVisible(false);
-        indexPanel.setVisible(true);
     }
 
     private void initPowerLineUI(){
@@ -133,18 +126,14 @@ public class MainJFrame extends JFrame implements ActionListener {
 
                 //测试部分
                 deviceTest = new DeviceTest();
-                jtab.add(deviceTest, "  1.设备测试测试    ");
+                jtab.add(deviceTest, "  设备测试测试    ");
 
                 serverSet = ServerSet.getInstance();
-                jtab.add(serverSet, " 2.数据来源设置  ");
+                jtab.add(serverSet, "  数据来源设置  ");
 
                 //升级部分
                 gateUpdate = new VersionUpdate();
-                jtab.add(gateUpdate, "  3.固件更新   ");
-
-                ///开发时测试
-                SocketTest socketTest = new SocketTest();
-                jtab.add(socketTest,"  udp报文测试 ");
+                jtab.add(gateUpdate, "  固件更新   ");
 
                 //jtab.setEnabledAt(0, false);
 //                deviceTest.set_module(moduleItem.getSelectedIndex());
@@ -161,15 +150,32 @@ public class MainJFrame extends JFrame implements ActionListener {
         }
     }
 
+    public void switchWindow() {
+        System.out.println("切换回到设备选择窗口");
+        uiPanel.setVisible(false);
+        indexPanel.setVisible(true);
+    }
+
     @Override
     public void actionPerformed(ActionEvent e) {    //选择设备时进入指定设备测试界面并做设置
         indexPanel.setVisible(false);
-        if(moduleItem.getSelectedIndex()<=1&&uiPanel==null){
+        if(null==uiPanel){
             initPowerLineUI();
+        }
+        if(moduleItem.getSelectedIndex()<1){
+            if(null!=uiPanel){
+                jtab.remove(connectParamSet);
+                jtab.remove(gateUpdate);
+            }
             uiPanel.setVisible(true);
-        }else{
-            initPowerLineUI();
+        }else if(moduleItem.getSelectedIndex()<3){
+            ///开发时测试
+            connectParamSet = ConnectParamSet.getInstance();
+            jtab.add(connectParamSet,"  连接参数设置 ");
+            jtab.add(gateUpdate,"  固件更新   ");
             uiPanel.setVisible(true);
+        }else {
+            switchWindow();
         }
         deviceTest.set_module(moduleItem.getSelectedIndex());
     }

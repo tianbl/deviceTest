@@ -12,14 +12,30 @@ import java.io.InputStreamReader;
  * Created by baolei on 2015/11/12.
  */
 public class SSHClient {
-    private Session session =null;
-    private ChannelExec openChannel =null;
+    private Session session = null;
+    private ChannelExec openChannel = null;
     private String user;
     private String pwd;
     private String host;
     private int port;
 
-    public SSHClient(){
+    private static SSHClient instance;
+
+    public static SSHClient getInstance(String user, String pwd, String host, int port) {
+        if (user != null && pwd != null && host != null && port != 0) {
+            if (null == instance) {
+                instance = new SSHClient(user, pwd, host, port);
+            } else if (!user.equals(instance.getUser()) || !pwd.equals(instance.getPwd())
+                    || !host.equals(instance.getHost()) || port != instance.getPort()) {
+                MainJFrame.showMssageln("SSH连接设置发生变化，重新创建SSH客户端");
+                instance.closeConnect();
+                instance = new SSHClient(user, pwd, host, port);
+            }
+        }
+        return instance;
+    }
+
+    public SSHClient(String user, String pwd, String host, int port) {
         try {
             JSch jsch = new JSch();
             session = jsch.getSession(user, host, port);
@@ -29,27 +45,31 @@ public class SSHClient {
             session.setPassword(pwd);
             session.connect();
             MainJFrame.showMssageln("SSH session创建成功");
-        }catch (Exception e){
+            this.user = user;
+            this.pwd = pwd;
+            this.host = host;
+            this.port = port;
+        } catch (Exception e) {
             MainJFrame.showMssageln("ssh 连接失败！");
             e.printStackTrace();
         }
     }
 
 
-    public boolean closeConnect(){
-        if(openChannel!=null&&!openChannel.isClosed()){
+    public boolean closeConnect() {
+        if (openChannel != null && !openChannel.isClosed()) {
             openChannel.disconnect();
         }
-        if(session!=null&&session.isConnected()){
+        if (session != null && session.isConnected()) {
             session.disconnect();
         }
         MainJFrame.showMssageln("SSH session连接断开");
         return true;
     }
 
-    public String executeCmd(String command){
+    public String executeCmd(String command) {
         StringBuffer result = new StringBuffer();
-        try{
+        try {
             openChannel = (ChannelExec) session.openChannel("exec");
             openChannel.setCommand(command);
             openChannel.setInputStream(null);
@@ -67,17 +87,19 @@ public class SSHClient {
             }
 //            in.close();
             reader.close();
-        }catch (Exception e){
-            System.out.println(command+"命令执行异常！");
+        } catch (Exception e) {
+            System.out.println(command + "命令执行异常！");
             e.printStackTrace();
+        } finally {
+            openChannel.disconnect();
         }
         return result.toString();
     }
 
-    public int executtingCmd(String command){
+    public int executtingCmd(String command) {
         StringBuffer result = new StringBuffer();
         int exitStatus = 0;
-        try{
+        try {
             openChannel = (ChannelExec) session.openChannel("exec");
             openChannel.setCommand(command);
             openChannel.setInputStream(null);
@@ -93,10 +115,26 @@ public class SSHClient {
             if (openChannel.isClosed()) {
                 exitStatus = openChannel.getExitStatus();
             }
-        }catch (Exception e){
-            System.out.println(command+"命令执行异常！");
+        } catch (Exception e) {
+            System.out.println(command + "命令执行异常！");
             e.printStackTrace();
         }
         return exitStatus;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public int getPort() {
+        return port;
     }
 }

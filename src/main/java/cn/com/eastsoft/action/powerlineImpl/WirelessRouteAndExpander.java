@@ -15,6 +15,7 @@ import cn.com.eastsoft.ui.powerline.ServerSet;
 import cn.com.eastsoft.util.*;
 
 import javax.swing.*;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -37,40 +38,49 @@ public class WirelessRouteAndExpander extends PowerLine {
 
         //SN、D-KEY、PLC MAC、DAK
         MainJFrame.showMssageln("设置SN、D-KEY...");
-//        SSHClient sshClient = new SSHClient();
+        SSHClient sshClient = new SSHClient(connectParamSet.getUser(),connectParamSet.getPwd(),
+                generalSet.getDevice_IP(),connectParamSet.getSshPort());
         String[] setSnKey = {"snkey set --sn=","snkey set --dkey="};
         String[] infoKey = {"sn","devicekey"};
         for(int i=0;i<setSnKey.length;i++){
-            if(null==deviceInfo){
-                MainJFrame.showMssageln("未查询到数据");
-            }else {
-                MainJFrame.showMssageln(setSnKey[i]+deviceInfo.get(infoKey[i]));
-            }
+            MainJFrame.showMssageln(sshClient.executeCmd("ls /www"));
+//            if(null==deviceInfo){
+//                MainJFrame.showMssageln("未查询到数据");
+//            }else {
+//                MainJFrame.showMssageln(setSnKey[i]+deviceInfo.get(infoKey[i]));
+//            }
         }
 
 
-        //set PLC MAC、DAK
-        UDPClient udpClient = UDPClient.getInstance();
-        generalSet = GeneralSet.getInstance();
-        int port = generalSet.getUdpPort();
+//        set PLC MAC、DAK
+//        UDPClient udpClient = UDPClient.getInstance();
+//        generalSet = GeneralSet.getInstance();
+//        int port = generalSet.getUdpPort();
+//        String[] infoKeyUdp = {"mac_1","pwd"};
+//        String[] messageType = {"0E","1E"};
+//        ReqMessage reqMessage = new ReqMessage();
+//        for(int i=0;i<messageType.length;i++){
+//            String contenet = deviceInfo.get(infoKeyUdp[i]).toString();
+//            reqMessage.setType(messageType[i]);
+//            reqMessage.setContent(contenet);
+//            byte[] send = reqMessage.getMessage();
+//            MainJFrame.showMssageln("设置信息内容："+contenet+"\n" +
+//                    "发送报文："+ ResMessage.parseByte2HexStr(send, 0, send.length));
+//            byte[] receive = sendMessage(udpClient, generalSet.getDevice_IP(), port, send);
+//            MainJFrame.showMssageln("收到报文："+ResMessage.parseByte2HexStr(receive,0,receive.length));
+//            if("00010001".equals(ResMessage.parseByte2HexStr(receive, 0, 4))){
+//                MainJFrame.showMssageln(infoKeyUdp[i]+"设置成功");
+//            }
+//        }
 
-        String[] infoKeyUdp = {"mac_1","pwd"};
-        String[] messageType = {"0E","1E"};
-        ReqMessage reqMessage = new ReqMessage();
-        for(int i=0;i<messageType.length;i++){
-            String contenet = deviceInfo.get(infoKeyUdp[i]).toString();
-            reqMessage.setType(messageType[i]);
-            reqMessage.setContent(contenet);
-            byte[] send = reqMessage.getMessage();
-            MainJFrame.showMssageln("设置信息内容："+contenet+"\n" +
-                    "发送报文："+ ResMessage.parseByte2HexStr(send, 0, send.length));
-            byte[] receive = sendMessage(udpClient, generalSet.getDevice_IP(), port, send);
-            MainJFrame.showMssageln("收到报文："+ResMessage.parseByte2HexStr(receive,0,receive.length));
-            if("00010001".equals(ResMessage.parseByte2HexStr(receive, 0, 4))){
-                MainJFrame.showMssageln(infoKeyUdp[i]+"设置成功");
-            }
-        }
-        return false;
+//        设置数据库
+        MainJFrame.showMssageln("设置数据库");
+        Map<String,String> mac = new HashMap<>();
+        mac.put("wifi","111");
+        mac.put("wan","222");
+        mac.put("lan","333");
+        serverInfo.setUsed("sn", (String) deviceInfo.get("sn"),mac);
+        return true;
     }
 
     @Override

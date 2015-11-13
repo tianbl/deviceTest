@@ -337,7 +337,7 @@ public class GeneralSet extends JPanel {
     public boolean saveVersion() {  //关闭程序时保存程序部分设置
         Map<String, String> map = new HashMap();
         map.put("pingNum", numOfPing_JTextField.getText());
-        map.put("udpPort", udpPort_JText.getText());
+//        map.put("udpPort", udpPort_JText.getText());
         map.put("deviceIP", deviceIP_JTextField.getText());
         map.put("accompanyIP", accompanyIP_JText.getText());
         map.put("gatewayIP", defaultgw_JTextField.getText());   //公司网关

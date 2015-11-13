@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- 为这个mapper指定一个唯一的namespace，namespace的值习惯上设置成包名+sql映射文件名，这样就能够保证namespace的值是唯一的
+例如namespace="me.gacl.mapping.userMapper"就是me.gacl.mapping(包名)+userMapper(userMapper.xml文件去除后缀)
+ -->
+<!--com.eastsoft.conf.mapper-->
+<mapper namespace="com.eastsoft.chip.cachefile.IDao.IUpgradeFileInfo">
+    <select id="exists" resultType="int">
+        SELECT COUNT(*) FROM sqlite_master where type='table' and name='upgradefileInfo';
+    </select>
+    <select id="selectCount" resultType="int">
+        select count(*) from upgradefileInfo
+    </select>
+    <select id="selectByID" parameterType="int" resultType="UpgradeFileInfo">
+        select * from `upgradefileInfo` where id = #{id}
+    </select>
+    <select id="selectList" parameterType="int" resultType="UpgradeFileInfo">
+        select * from upgradefileInfo where promorionId = #{promorionId}
+    </select>
+    <select id="selectAll" resultType="UpgradeFileInfo">
+        select * from upgradefileInfo
+    </select>
+    <insert id="addUpgradeFileInfo" parameterType="UpgradeFileInfo"
+            useGeneratedKeys="true" keyProperty="id">
+        insert into upgradefileInfo(promorionId,fileName,filePath,chipType,downloadNum,versionName,downloadTime,recentlUsed,isready)
+        values(#{promorionId},#{fileName},#{filePath},#{chipType},#{downloadNum},#{versionName},#{downloadTime},#{recentlUsed},#{isready})
+    </insert>
+    <update id="updateFileInfo" parameterType="UpgradeFileInfo">
+        update upgradefileInfo set recentlUsed=#{recentlUsed},downloadNum=#{downloadNum},
+        promorionId=#{promorionId},fileName=#{fileName},filePath=#{filePath},
+        chipType=#{chipType},versionName=#{versionName},downloadTime=#{downloadTime},
+        isready=#{isready}
+        WHERE id=#{id}
+    </update>
+    <update id="createTable">
+        CREATE TABLE upgradefileInfo (
+        id INTEGER  NOT NULL,
+        promorionId int DEFAULT NULL,
+        fileName TEXT DEFAULT NULL,
+        filePath TEXT DEFAULT NULL,
+        chipType TEXT DEFAULT NULL,
+        downloadNum int DEFAULT '0',
+        versionName TEXT DEFAULT NULL,
+        downloadTime datetime NULL,
+        recentlUsed datetime NULL,
+        isready BLOB FALSE ,
+        PRIMARY KEY (`id`)
+        );
+    </update>
+    <delete id="deleteInfo" parameterType="int">
+        delete from upgradefileInfo where id=#{id}
+    </delete>
+</mapper>
