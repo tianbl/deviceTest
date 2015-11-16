@@ -134,7 +134,8 @@ public class DeviceTest extends JPanel {
                     @Override
                     public void run() {
                         // TODO Auto-generated method stub
-                        allTest();
+                        //generalSet 在构造方法中初始化
+                        allTest(generalSet.getQrCode_Info());
                     }
                 }).start();
             } else {
@@ -191,10 +192,18 @@ public class DeviceTest extends JPanel {
         }
     }
 
-    public boolean allTest() {
+    /**
+     * 测试所有
+     * @param map 二维码信息，存放在map中
+     * @return
+     */
+    public boolean allTest(Map<String,String> map) {
         String gateway_ip = generalSet.getDevice_IP();
         String localhost_ip = generalSet.getLocal_IP();
         String accompany_ip = generalSet.getAccompany_IP();
+        if(null==map){
+            MainJFrame.showMssageln("检测不到二维码信息，可能由二维码格式错误导致！6954176809599");
+        }
         if (false == powerLine.info_set(null)) {
             int i = JOptionPane.showConfirmDialog(this, "信息设置发生错误，是否继续其他测试？", "提示", JOptionPane.YES_NO_CANCEL_OPTION);
             if (0 != i) {

@@ -87,7 +87,9 @@ public class MainJFrame extends JFrame implements ActionListener {
                         ProgramDataManag.deleteConf("deviceTest.conf");
                         serverSet.saveVersion();
                         gateUpdate.saveVersion();
-                        connectParamSet.saveVersion();
+                        if(null!=connectParamSet){
+                            connectParamSet.saveVersion();
+                        }
                         GeneralSet.getInstance().saveVersion();
                         GeneralSet.getInstance().stopProduct();
                     }
@@ -178,6 +180,7 @@ public class MainJFrame extends JFrame implements ActionListener {
             switchWindow();
         }
         deviceTest.set_module(moduleItem.getSelectedIndex());
+        Para.setRex(moduleItem.getSelectedIndex());
     }
 
     /**

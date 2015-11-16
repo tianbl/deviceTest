@@ -17,7 +17,7 @@ public class BarcodeKeyboardListener{
     private StringBuilder barcode;
     //扫描开始时间
     private long start;
-    private Map<Integer,Integer> keyToLetter=new HashMap<Integer,Integer>();
+    private Map<Integer,Character> keyToLetter=new HashMap<Integer,Character>();
     //一次扫描的最长时间
     private static int maxScanTime=500;
     //条形码的最短长度
@@ -27,26 +27,23 @@ public class BarcodeKeyboardListener{
      * 初始键盘代码和字母的对于关系
      */
     public BarcodeKeyboardListener(){
-        keyToLetter.put(48,0);
-        keyToLetter.put(49,1);
-        keyToLetter.put(50,2);
-        keyToLetter.put(51,3);
-        keyToLetter.put(52,4);
-        keyToLetter.put(53,5);
-        keyToLetter.put(54,6);
-        keyToLetter.put(55,7);
-        keyToLetter.put(56,8);
-        keyToLetter.put(57,9);
+        keyToLetter.put(48,'0');
+        keyToLetter.put(49,'1');
+        keyToLetter.put(50,'2');
+        keyToLetter.put(51,'3');
+        keyToLetter.put(52,'4');
+        keyToLetter.put(53,'5');
+        keyToLetter.put(54,'6');
+        keyToLetter.put(55,'7');
+        keyToLetter.put(56,'8');
+        keyToLetter.put(57,'9');
 
-        int mh = ':';
-        int lf = '\r';
-        int enter = '\n';
-        keyToLetter.put(58,mh);
-        keyToLetter.put(10,lf);
-        keyToLetter.put(13,enter);
-        int[] letter = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
+        keyToLetter.put(58,':');
+        keyToLetter.put(13,'\n');
+        keyToLetter.put(32,' ');
+        char[] letter = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'};
         for(int i=0;i<letter.length;i++){
-        	keyToLetter.put(65+i,letter[i]);
+            keyToLetter.put(65+i,letter[i]);
         }
     }
     /**
@@ -55,11 +52,7 @@ public class BarcodeKeyboardListener{
      */
     public void onKey(int keyCode) {
         //获取输入的是那个数字
-        Integer tletter=keyToLetter.get(keyCode);
-        int i = tletter;
-        char letter = (char)keyCode;
-//        System.out.print(letter);
-        
+        char letter = '\0';
         if(barcode==null){
             //开始进入扫描状态
             barcode=new StringBuilder();
@@ -74,25 +67,21 @@ public class BarcodeKeyboardListener{
             //记录开始扫描时间
             start=System.currentTimeMillis();
         }
-        //System.out.println("=============");
-        //数字键0-9
-        if (keyCode >= 48 && keyCode <= 58) {
+        //数字键0-9 A-Z :
+        if ((keyCode >= 48 && keyCode <= 58)||(keyCode>=65&&keyCode<=90)) {
+            letter = keyToLetter.get(keyCode);
+            barcode.append(letter);
+        }else if(keyCode==186){
+//            System.out.println("冒号=="+keyCode);
+            letter = keyToLetter.get(186-128);
             barcode.append(letter);
         }
-        if(keyCode >= 65&&keyCode <= 90){
-        	//交个监听器处理
-        	barcode.append(letter);
-        }
-        //回车键
-        if(keyCode == 10) {
-        	barcode.append(letter);
-        }
+
+//        System.out.println("接收到的扫描数据："+barcode.toString());
         if(GeneralSet.getInstance().checkCodeInfo(barcode.toString(),true)>0){
-//        	BarcodeBuffer.product(barcode.toString());
-//        	System.out.println("get match is: "+barcode.toString()+"");
         	//当匹配成功后重新为缓冲分配内存，匹配串在checkCodeInfo中被加入生产者队列
         	barcode=new StringBuilder();
-        	//BarcodeBuffer.product(barcode.toString());
+        	BarcodeBuffer.product(barcode.toString());
         }
         if (keyCode == 13) {
             //条形码扫描器在很短的时间内输入了至少 barcodeMinLength 个字符以上信息，并且以“回车”作为结束字符

@@ -173,8 +173,8 @@ public class GeneralSet extends JPanel {
             public void run() {
                 // TODO Auto-generated method stub
                 //启用生产者
-//				barcodeProducter = new BarcodeProducter();
-//				barcodeProducter.startProduct();
+				barcodeProducter = new BarcodeProducter();
+				barcodeProducter.startProduct();
 
                 while (true) {
                     /*if(null==mainJFrame){
@@ -186,12 +186,18 @@ public class GeneralSet extends JPanel {
                         qrcode_JTextField.setText("");
                         Thread.sleep(300);
                         qrcode_JTextField.setText(queueInfo);
-                        Map map = getQrCode_Info();
-                        MainJFrame.showMssage("解析得到标签信息如下\n" +
-                                "sn:" + map.get("sn") + " gid:" + map.get("gid") + " pwd:" + map.get("pwd") + "\n");
-                        MainJFrame.getInstance().getDeviceTest().allTest();
-                        //Thread.sleep(2000);
-                        qrcode_JTextField.setText("");
+                        Para.test1(queueInfo);
+                        Map<String,String> map = getQrCode_Info();
+                        if(map!=null){
+                            for(String str:Para.mapKey){
+                                MainJFrame.showMssageln(str+"=="+ map.get(str));
+                            }
+                        }
+//                        MainJFrame.showMssage("解析得到标签信息如下\n" +
+//                                "sn:" + map.get("sn") + " gid:" + map.get("gid") + " pwd:" + map.get("pwd") + "\n");
+//                        MainJFrame.getInstance().getDeviceTest().allTest();
+//                        Thread.sleep(2000);
+//                        qrcode_JTextField.setText("");
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -245,7 +251,7 @@ public class GeneralSet extends JPanel {
 
     public void stopProduct() {
         //停止二维码扫描
-//		barcodeProducter.stopProduct();
+		barcodeProducter.stopProduct();
     }
 
     /**
@@ -255,32 +261,29 @@ public class GeneralSet extends JPanel {
      */
     public int checkCodeInfo(String str, boolean isProducer) {
 
-//		String regex1 = "SN\\w{1,24}USER\\d{1,10}PWD\\d{6}$";
-        ///扫码器扫描标签后得到的信息中总是会带有'J'所以正则表达式的规则中包含了'J'
-
-        Pattern pattern1 = Pattern.compile(Para.regex1);
-        Pattern pattern2 = Pattern.compile(Para.regex2);
-        Matcher matcher1 = pattern1.matcher(str);
-        Matcher matcher2 = pattern2.matcher(str);
-        if (matcher1.find()) {
+        Pattern patternNew = Pattern.compile(Para.labelInfoRex);
+        Pattern patternOld = Pattern.compile(Para.regex2);
+        Matcher matcherNew = patternNew.matcher(str);
+        Matcher matcherOld = patternOld.matcher(str);
+        if (matcherNew.find()) {    //新条码
             if (isProducer) {
-                if (matcher1.start(0) > 0) {//如果不是完全匹配，则去掉干扰字符
-                    BarcodeBuffer.product(matcher1.group(0));
-                    MainJFrame.showMssageln("由表达式regex1匹配，缓冲区存在干扰字符，已将正确条码信息取出，测试期间请减少输入操作");
+                if (matcherNew.start(0) > 0) {//如果不是完全匹配，则去掉干扰字符
+                    BarcodeBuffer.product(matcherNew.group(0));
+                    MainJFrame.showMssageln("（新二维码）匹配，缓冲区存在干扰字符，已将正确条码信息取出，测试期间请减少输入操作");
                 } else {
                     BarcodeBuffer.product(str);
-                    MainJFrame.showMssageln("正则表达式1完全匹配");
+                    MainJFrame.showMssageln("正则表达式1（新二维码）完全匹配");
                 }
             }
             return 1;
-        } else if (matcher2.find()) {
+        } else if (matcherOld.find()) {     //旧条码
             if (isProducer) {
-                if (matcher2.start(0) > 0) {//如果不是完全匹配，则去掉干扰字符
-                    BarcodeBuffer.product(matcher2.group(0));
-                    MainJFrame.showMssageln("由表达式regex2匹配，缓冲区存在干扰字符，已将正确条码信息取出，测试期间请减少减少输入操作");
+                if (matcherOld.start(0) > 0) {//如果不是完全匹配，则去掉干扰字符
+                    BarcodeBuffer.product(matcherOld.group(0));
+                    MainJFrame.showMssageln("由表达式regex2（老版二维码）匹配，缓冲区存在干扰字符，已将正确条码信息取出，测试期间请减少减少输入操作");
                 } else {
                     BarcodeBuffer.product(str);
-                    MainJFrame.showMssageln("正则表达式2完全匹配");
+                    MainJFrame.showMssageln("正则表达式2（老版二维码）完全匹配");
                 }
             }
             return 2;
@@ -292,31 +295,28 @@ public class GeneralSet extends JPanel {
     public Map<String, String> getQrCode_Info() {
         String qrcodeinfo = qrcode_JTextField.getText();
         if (null == qrcodeinfo || "".equals(qrcodeinfo)) {
-            MainJFrame.showMssageln("没有输入网关条码信息,请检查输出确认程序是否已得到二维码信息...");
-            return null;
-        }
-
-        if (false == (qrcodeinfo.contains("SN") && qrcodeinfo.contains("USER") && qrcodeinfo.contains("PWD"))) {
+            MainJFrame.showMssageln("没有输入设备条码信息,请检查输出确认程序是否已得到二维码信息...");
             return null;
         }
 
         Map<String, String> map = new HashMap();
         if (checkCodeInfo(qrcodeinfo, false) == 1) {
-            Pattern pattern = Pattern.compile(Para.regex1);
+            Pattern pattern = Pattern.compile(Para.labelInfoRex);
             Matcher matcher = pattern.matcher(qrcodeinfo);
             matcher.find();
-            map.put("sn", matcher.group(2));
-            map.put("gid", matcher.group(4));
-            map.put("pwd", matcher.group(6));
+            for(int i=0;i<Para.matcherIndex.length;i++){
+//                System.out.println(Para.matcherIndex[i]+"（Para.matcherIndex[i]）："+matcher.group(Para.matcherIndex[i]));
+                map.put(Para.mapKey[i], matcher.group(Para.matcherIndex[i]));
+            }
         } else if (checkCodeInfo(qrcodeinfo, false) == 2) {
-            Pattern pattern = Pattern.compile(Para.regex2);
+            Pattern pattern = Pattern.compile(Para.labelInfoRexOld);
             Matcher matcher = pattern.matcher(qrcodeinfo);
             matcher.find();
-            map.put("sn", matcher.group(2));
-            map.put("gid", matcher.group(4));
-            map.put("pwd", matcher.group(6));
+            for(int i=0;i<Para.matcherIndexOld.length;i++){
+//                System.out.println(Para.matcherIndexOld[i]+"（Para.matcherIndex[i]）："+matcher.group(Para.matcherIndexOld[i]));
+                map.put(Para.mapKeyOld[i], matcher.group(Para.matcherIndexOld[i]));
+            }
         }
-
         return map;
     }
 

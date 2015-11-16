@@ -47,20 +47,11 @@ public class ScanBarcodeService {
                     switch (wParam.intValue()) {
                         case WinUser.WM_KEYUP:
                             int keyCode = info.vkCode;
-                            char ch = (char) keyCode;
-//                            System.out.print("keyCode="+keyCode);
-                           
                             //监听数字键0-9
-                            if (keyCode >= 48 && keyCode <= 58) {
+                            if ((keyCode >= 48 && keyCode <= 58)||(keyCode>=65&&keyCode<=90)) {
                                 //交个监听器处理
-                            	//System.out.print(ch);
                                 listener.onKey(keyCode);
-                            }else if(keyCode >= 65&&keyCode <= 90){
-                            	//交个监听器处理
-                            	//System.out.print(ch);
-                                listener.onKey(keyCode);
-                            }else if(keyCode==10){
-                            	//System.out.print(ch);
+                            }else if(keyCode==186){
                             	listener.onKey(keyCode);
                             }else if (keyCode == 13) {
                                 //交个监听器处理
