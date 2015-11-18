@@ -80,8 +80,8 @@ public class BarcodeKeyboardListener{
 //        System.out.println("接收到的扫描数据："+barcode.toString());
         if(GeneralSet.getInstance().checkCodeInfo(barcode.toString(),true)>0){
         	//当匹配成功后重新为缓冲分配内存，匹配串在checkCodeInfo中被加入生产者队列
-        	barcode=new StringBuilder();
-        	BarcodeBuffer.product(barcode.toString());
+//        	barcode=new StringBuilder();
+//        	BarcodeBuffer.product(barcode.toString());
         }
         if (keyCode == 13) {
             //条形码扫描器在很短的时间内输入了至少 barcodeMinLength 个字符以上信息，并且以“回车”作为结束字符

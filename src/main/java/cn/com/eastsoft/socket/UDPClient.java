@@ -23,7 +23,7 @@ public class UDPClient {
 
     private UDPClient() {
         try {
-            client = new DatagramSocket(10086);
+            client = new DatagramSocket();
             client.setSoTimeout(5000);
         } catch (SocketException e) {
             System.out.println("create udp client failed");

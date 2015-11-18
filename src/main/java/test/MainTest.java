@@ -3,6 +3,8 @@ package test;
 import cn.com.eastsoft.action.plMessage.ExtenderRes;
 import cn.com.eastsoft.action.plMessage.ReqMessage;
 import cn.com.eastsoft.action.plMessage.ResMessage;
+import cn.com.eastsoft.sql.ServerInfo;
+import cn.com.eastsoft.sql.serverInfoImpl.MysqlOperation;
 import cn.com.eastsoft.ui.Para;
 import cn.com.eastsoft.util.Ping;
 import com.jcraft.jsch.Channel;
@@ -28,11 +30,11 @@ public class MainTest {
     public static void main(String[] args){
 //        regexTest();
 //        readProperties();
-        try {
-            reqTest();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        sqlTest();
+    }
+
+    public static void sqlTest(){
+//        ServerInfo serverInfo = new MysqlOperation();
     }
 
     public static void regexTest(){

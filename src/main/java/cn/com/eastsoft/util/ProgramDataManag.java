@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class ProgramDataManag {
-	
+	private static Map map = null;
 	/**
 	 * 获取程序配置数据
 	 * @param db
@@ -23,7 +23,10 @@ public class ProgramDataManag {
 		}
 		String sql = "SELECT * FROM configData";
 		String[] format = {"name","value"};
-		Map map = queryMap(getNowPath()+db,sql);
+		if(null==map){
+			map = queryMap(getNowPath()+db,sql);
+		}
+//		Map map = queryMap(getNowPath()+db,sql);
 		return map;
 	}
 	

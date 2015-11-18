@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.com.eastsoft.sql.ServerInfo;
+import cn.com.eastsoft.ui.MainJFrame;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -23,12 +24,13 @@ public class XlsOperation implements ServerInfo {
 	private FileOutputStream outReport = null;
 
 	public XlsOperation(String fileName) {
-		file = new File(fileName);
 		try {
+			file = new File(fileName);
 			is = new FileInputStream(file);
 			hssfWorkbook = new HSSFWorkbook(is);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
+			MainJFrame.showMssageln("execl文件加载失败，请查看error.log中的异常信息！");
 			e.printStackTrace();
 		}
 	}

@@ -44,6 +44,7 @@ public class MysqlOperation implements ServerInfo {
 			return true;
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
+			MainJFrame.showMssageln("数据库连接失败，请查看error.log中的异常信息！");
 			e.printStackTrace();
 			return false;
 		}
@@ -89,7 +90,7 @@ public class MysqlOperation implements ServerInfo {
 	public Map<String,Object> getServerInfo(String column,String value){
 	
 //		String[] formate={"id","sn","mac_label","gid","pwd","produce","devicekey","mac_3","mac_5","mac_6"};
-		String[] formate={"id","sn","MAClabel","gid","pwd","devicekey","mac_1","mac_3","mac_5","mac_6"};
+		String[] formate={"id","sn","MAClabel","dak","devicekey","mac_1","mac_3","mac_5","mac_6"};
 		StringBuffer sb = new StringBuffer();
 		for(String str:formate){
 			sb.append(str+",");

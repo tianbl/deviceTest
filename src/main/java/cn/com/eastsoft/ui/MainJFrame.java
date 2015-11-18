@@ -137,6 +137,8 @@ public class MainJFrame extends JFrame implements ActionListener {
                 gateUpdate = new VersionUpdate();
                 jtab.add(gateUpdate, "  固件更新   ");
 
+                connectParamSet = ConnectParamSet.getInstance();
+
                 //jtab.setEnabledAt(0, false);
 //                deviceTest.set_module(moduleItem.getSelectedIndex());
             }
@@ -172,7 +174,6 @@ public class MainJFrame extends JFrame implements ActionListener {
             uiPanel.setVisible(true);
         }else if(moduleItem.getSelectedIndex()<3){
             ///开发时测试
-            connectParamSet = ConnectParamSet.getInstance();
             jtab.add(connectParamSet,"  连接参数设置 ");
             jtab.add(gateUpdate,"  固件更新   ");
             uiPanel.setVisible(true);
@@ -216,5 +217,9 @@ public class MainJFrame extends JFrame implements ActionListener {
 
     public DeviceTest getDeviceTest() {
         return deviceTest;
+    }
+
+    public int getModuleItemSelected(){
+        return moduleItem.getSelectedIndex();
     }
 }

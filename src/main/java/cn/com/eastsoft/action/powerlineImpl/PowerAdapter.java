@@ -16,6 +16,7 @@ import cn.com.eastsoft.util.Ping;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -33,7 +34,27 @@ public class PowerAdapter extends PowerLine{
         }else {
             serverInfo = new MysqlOperation();
         }
-        Map deviceInfo = serverInfo.getServerInfo("sn",GeneralSet.getInstance().getQrCodeString());
+        Map deviceInfo = serverInfo.getServerInfo("sn",qrcodeInfo.get("sn"));
+
+        if (null == deviceInfo) {
+            MainJFrame.showMssageln("获取数据失败，无法获数据库中对应本设备的数据！");
+            return false;
+        } else {
+            if("U".equals(deviceInfo.get("MAClabel"))){
+                MainJFrame.showMssageln("本条条码对应资源数据已经使用,结束操作！");
+                return false;
+            }
+            boolean snEqual = qrcodeInfo.get("sn").equals(deviceInfo.get("sn"));
+            boolean macEqual = qrcodeInfo.get("mac").equals(deviceInfo.get("mac_1"));
+            boolean dakEqual = true;
+            if (qrcodeInfo.get("dak") != null || !"".equals(qrcodeInfo.get("dak"))) {
+                dakEqual = qrcodeInfo.get("dak").equals(deviceInfo.get("dak"));
+            }
+            if (!(snEqual && macEqual && dakEqual)) {
+                MainJFrame.showMssageln("数据库信息与二维码标签信息不一致,结束操作！");
+                return false;
+            }
+        }
 
         MainJFrame.showMssageln("开始进行信息设置...");
         //获取udp客户端
@@ -41,7 +62,8 @@ public class PowerAdapter extends PowerLine{
         generalSet = GeneralSet.getInstance();
         int port = generalSet.getUdpPort();
 
-        String[] infoKey = {"mac_1","sn","devicekey","pwd"};
+        String[] infoKey = {"mac_1","sn","devicekey","dak"};
+        String[] byname = {"PLC MAC","S/N","D-KEY","DAK"};
         String[] messageType = {"0E","0F","1B","1E"};
         ReqMessage reqMessage = new ReqMessage();
         for(int i=0;i<messageType.length;i++){
@@ -49,12 +71,12 @@ public class PowerAdapter extends PowerLine{
             reqMessage.setType(messageType[i]);
             reqMessage.setContent(contenet);
             byte[] send = reqMessage.getMessage();
-            MainJFrame.showMssageln("设置信息内容："+contenet+"\n" +
+            MainJFrame.showMssageln("设置"+byname[i]+"值为："+contenet+"\n" +
                     "发送报文："+ResMessage.parseByte2HexStr(send,0,send.length));
             byte[] receive = sendMessage(udpClient, generalSet.getDevice_IP(), port, send);
             MainJFrame.showMssageln("收到报文："+ResMessage.parseByte2HexStr(receive,0,receive.length));
             if("00010001".equals(ResMessage.parseByte2HexStr(receive, 0, 4))){
-                MainJFrame.showMssageln(infoKey[i]+"设置成功");
+                MainJFrame.showMssageln(byname[i]+"设置成功");
 
             }
         }
@@ -65,7 +87,7 @@ public class PowerAdapter extends PowerLine{
         byte[][] queryMessage = {{0x02,0x00,0x00},{0x10,0x00,0x00},
                 {0x1C,0x00,0x00},{0x1F,0x00,0x00}};
         for(int i=0;i<queryMessage.length;i++){
-            MainJFrame.showMssageln("发送"+infoKey[i]+"查询报文"+
+            MainJFrame.showMssageln("发送"+byname[i]+"查询报文"+
                     ResMessage.parseByte2HexStr(queryMessage[i],0,queryMessage[i].length));
             byte[] receive = sendMessage(udpClient, generalSet.getDevice_IP(), port, queryMessage[i]);
             MainJFrame.showMssageln("收到报文："+ResMessage.parseByte2HexStr(receive,0,receive.length));
@@ -77,7 +99,16 @@ public class PowerAdapter extends PowerLine{
                 return false;
             }
         }
-        MainJFrame.showMssageln("信息设置完成");
+
+        Map<String,String> map = new HashMap<>();
+        MainJFrame.showMssageln("更新数据库数据状态!");
+        map.put("wan","");map.put("lan","");map.put("lan", "");
+        if(serverInfo.setUsed("sn", (String) deviceInfo.get("sn"),map)>0){
+            MainJFrame.showMssageln("更新数据库数据状态成功，信息设置完成!");
+        }else {
+            MainJFrame.showMssageln("更新数据库数据状态失败！");
+        }
+
         return true;
     }
 

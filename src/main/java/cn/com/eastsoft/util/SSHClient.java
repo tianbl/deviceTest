@@ -50,7 +50,7 @@ public class SSHClient {
             this.host = host;
             this.port = port;
         } catch (Exception e) {
-            MainJFrame.showMssageln("ssh 连接失败！");
+            MainJFrame.showMssageln("ssh 连接失败，请检查参数设置和网络连接！");
             e.printStackTrace();
         }
     }
@@ -109,7 +109,7 @@ public class SSHClient {
             while ((buf = reader.readLine()) != null) {
 //                result+= new String(buf.getBytes("gbk"),"UTF-8")+"    \r\n";
 //                result.append(buf+"\n");
-                System.out.println(buf);
+                MainJFrame.showMssageln(buf);
             }
             reader.close();
             if (openChannel.isClosed()) {

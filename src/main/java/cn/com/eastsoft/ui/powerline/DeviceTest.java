@@ -20,6 +20,7 @@ import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.sql.ServerInfo;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.Ping;
+import cn.com.eastsoft.util.ProgramDataManag;
 
 //网关测试部分
 public class DeviceTest extends JPanel {
@@ -94,26 +95,25 @@ public class DeviceTest extends JPanel {
 
     public void set_module(int selectModule){
 
-        System.out.println(selectModule);
+        Map<String, String> map = ProgramDataManag.getConfigData("deviceTest.conf");
         //设置选择的设备
         if(0==selectModule){
             powerLine = new PowerAdapter();
             signalTest_JButton[3].setVisible(false);
-            generalSet.udpPort_JText.setVisible(true);
-            generalSet.udpPort_JLabel.setVisible(true);
-            System.out.println(selectModule+"选择电力线适配器");
+//            generalSet.udpPort_JText.setVisible(true);
+//            generalSet.udpPort_JLabel.setText("udp通信端口");
+            generalSet.udpPort_JText.setText(map.get("udpPort"));
+            MainJFrame.showMssageln(selectModule + "选择电力线适配器"+map.get("udpPort"));
         }else if(1==selectModule){
             powerLine = new WirelessRouteAndExpander();
             signalTest_JButton[3].setVisible(true);
-            generalSet.udpPort_JText.setVisible(false);
-            generalSet.udpPort_JLabel.setVisible(false);
-            MainJFrame.showMssageln(selectModule + "选择电力线无线路由器");
+            generalSet.udpPort_JText.setText(map.get("deviceUdpPort"));
+            MainJFrame.showMssageln(selectModule + "选择电力线无线路由器"+map.get("deviceUdpPort"));
         }else if(2==selectModule){
             powerLine = new WirelessRouteAndExpander();
             signalTest_JButton[3].setVisible(true);
-            generalSet.udpPort_JText.setVisible(false);
-            generalSet.udpPort_JLabel.setVisible(false);
-            MainJFrame.showMssageln(selectModule + "选择电力线无线扩展器");
+            generalSet.udpPort_JText.setText(map.get("deviceUdpPort"));
+            MainJFrame.showMssageln(selectModule + "选择电力线无线扩展器"+map.get("deviceUdpPort"));
         }
     }
 
@@ -147,7 +147,7 @@ public class DeviceTest extends JPanel {
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() { // 启动线程执行后续操作
-                                        powerLine.info_set(null);
+                                        powerLine.info_set(generalSet.getQrCode_Info());
                                     }
                                 }).start();
                                 break;
@@ -194,17 +194,17 @@ public class DeviceTest extends JPanel {
 
     /**
      * 测试所有
-     * @param map 二维码信息，存放在map中
+     * @param qrcodeInfo 二维码信息，存放在map中
      * @return
      */
-    public boolean allTest(Map<String,String> map) {
+    public boolean allTest(Map<String,String> qrcodeInfo) {
         String gateway_ip = generalSet.getDevice_IP();
         String localhost_ip = generalSet.getLocal_IP();
         String accompany_ip = generalSet.getAccompany_IP();
-        if(null==map){
+        if(null==qrcodeInfo){
             MainJFrame.showMssageln("检测不到二维码信息，可能由二维码格式错误导致！6954176809599");
         }
-        if (false == powerLine.info_set(null)) {
+        if (false == powerLine.info_set(qrcodeInfo)) {
             int i = JOptionPane.showConfirmDialog(this, "信息设置发生错误，是否继续其他测试？", "提示", JOptionPane.YES_NO_CANCEL_OPTION);
             if (0 != i) {
                 return false;

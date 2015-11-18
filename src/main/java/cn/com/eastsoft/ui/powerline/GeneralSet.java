@@ -327,7 +327,7 @@ public class GeneralSet extends JPanel {
         }
 
         numOfPing_JTextField.setText(map.get("pingNum"));
-        udpPort_JText.setText(map.get("udpPort"));
+        udpPort_JText.setText(map.get("deviceUdpPort"));
         deviceIP_JTextField.setText(map.get("deviceIP"));
         accompanyIP_JText.setText(map.get("accompanyIP"));
         defaultgw_JTextField.setText(map.get("gatewayIP"));
@@ -335,12 +335,19 @@ public class GeneralSet extends JPanel {
     }
 
     public boolean saveVersion() {  //关闭程序时保存程序部分设置
+        Map<String, String> mapOld = ProgramDataManag.getConfigData("deviceTest.conf");
         Map<String, String> map = new HashMap();
         map.put("pingNum", numOfPing_JTextField.getText());
-//        map.put("udpPort", udpPort_JText.getText());
         map.put("deviceIP", deviceIP_JTextField.getText());
         map.put("accompanyIP", accompanyIP_JText.getText());
         map.put("gatewayIP", defaultgw_JTextField.getText());   //公司网关
+        if(MainJFrame.getInstance().getModuleItemSelected()==0){
+            map.put("udpPort", udpPort_JText.getText());
+            map.put("deviceUdpPort",mapOld.get("deviceUdpPort"));
+        }else {
+            map.put("deviceUdpPort", udpPort_JText.getText());
+            map.put("udpPort", mapOld.get("udpPort"));
+        }
 
         ProgramDataManag.updateConf("deviceTest.conf", map);
         return true;
