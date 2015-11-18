@@ -27,6 +27,7 @@ public class BarcodeKeyboardListener{
      * 初始键盘代码和字母的对于关系
      */
     public BarcodeKeyboardListener(){
+        keyToLetter.put(46,'.');
         keyToLetter.put(48,'0');
         keyToLetter.put(49,'1');
         keyToLetter.put(50,'2');
@@ -70,6 +71,9 @@ public class BarcodeKeyboardListener{
         //数字键0-9 A-Z :
         if ((keyCode >= 48 && keyCode <= 58)||(keyCode>=65&&keyCode<=90)) {
             letter = keyToLetter.get(keyCode);
+            barcode.append(letter);
+        }else if(keyCode==190){     //同一个键位上只能检测到键位+shift输出的字符值，切是加128之后的值，因此此处之取‘.’的ascii
+            letter = keyToLetter.get(46);
             barcode.append(letter);
         }else if(keyCode==186){
 //            System.out.println("冒号=="+keyCode);

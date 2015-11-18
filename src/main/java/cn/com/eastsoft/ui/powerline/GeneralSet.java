@@ -189,7 +189,13 @@ public class GeneralSet extends JPanel {
                         Para.test1(queueInfo);
                         Map<String,String> qrcodeInfo = getQrCode_Info();
                         if(qrcodeInfo!=null){
-                            for(String str:Para.mapKey){
+                            String[] qrcodeInfoKey = null;
+                            if(null==qrcodeInfo.get("ip")){
+                                qrcodeInfoKey = Para.mapKey;
+                            }else {
+                                qrcodeInfoKey = Para.mapKeyOld;
+                            }
+                            for(String str:qrcodeInfoKey){
                                 MainJFrame.showMssageln(str+"=="+ qrcodeInfo.get(str));
                             }
                         }
@@ -264,7 +270,7 @@ public class GeneralSet extends JPanel {
     public int checkCodeInfo(String str, boolean isProducer) {
 
         Pattern patternNew = Pattern.compile(Para.labelInfoRex);
-        Pattern patternOld = Pattern.compile(Para.regex2);
+        Pattern patternOld = Pattern.compile(Para.labelInfoRexOld);
         Matcher matcherNew = patternNew.matcher(str);
         Matcher matcherOld = patternOld.matcher(str);
         if (matcherNew.find()) {    //新条码

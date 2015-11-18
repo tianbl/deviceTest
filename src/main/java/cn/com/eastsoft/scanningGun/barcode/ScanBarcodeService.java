@@ -53,6 +53,8 @@ public class ScanBarcodeService {
                                 listener.onKey(keyCode);
                             }else if(keyCode==186){
                             	listener.onKey(keyCode);
+                            }else if(keyCode==190){
+                                listener.onKey(keyCode);
                             }else if (keyCode == 13) {
                                 //交个监听器处理
                                 listener.onKey(keyCode);
