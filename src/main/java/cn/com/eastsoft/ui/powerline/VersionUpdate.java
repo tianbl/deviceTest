@@ -19,26 +19,27 @@ import cn.com.eastsoft.ui.MainJFrame;
 import cn.com.eastsoft.util.Connect;
 import cn.com.eastsoft.util.Ping;
 import cn.com.eastsoft.util.ProgramDataManag;
+import cn.com.eastsoft.util.SSHClient;
 
 //网关升级部分
 public class VersionUpdate extends JPanel implements ActionListener{
 	
 	private JLabel hwVersion_Jlabel;	//硬件版本号
 	private JTextField hwVersion_JTextField;
-	private JLabel fwVersion_JLabel;	//路由器固件版本号
+	private JLabel fwVersion_JLabel;	//软件版本号
 	private JTextField fwVersion_JTextField;
-	private JLabel gwVersion_JLabel;	//网关版本号
-	private JTextField gwVersion_JTextField;
+//	private JLabel gwVersion_JLabel;	//网关版本号
+//	private JTextField gwVersion_JTextField;
 	
-	private JLabel gatewayIP_JLabel;
-	private JTextField gatewayIP_JTextField;
+	private JLabel deviceIP_JLabel;
+	private JTextField deviceIP_JTextField;
 	
 	private JLabel localIP_JLabel;
 	private JTextField localIP_JTextField;
 	
 	private JButton refresh_JButton;
 	private JButton update_button;
-	private String update_button_name="检查路由器版本更新";
+	private String update_button_name="检查设备软硬件版本更新";
 	private JButton fileChooser;
 	private String updateFileName;
 	private String realPath;
@@ -47,12 +48,12 @@ public class VersionUpdate extends JPanel implements ActionListener{
 		this.setLayout(null);
 		
 		{
-			gatewayIP_JLabel = new JLabel("智能路由器网关IP");
-			gatewayIP_JLabel.setBounds(20,10,100,30);
-			gatewayIP_JTextField = new JTextField();
-			gatewayIP_JTextField.setBounds(130, 10, 100, 30);
-			this.add(gatewayIP_JLabel);
-			this.add(gatewayIP_JTextField);
+			deviceIP_JLabel = new JLabel("被测设备IP");
+			deviceIP_JLabel.setBounds(20,10,100,30);
+			deviceIP_JTextField = new JTextField();
+			deviceIP_JTextField.setBounds(130, 10, 100, 30);
+			this.add(deviceIP_JLabel);
+			this.add(deviceIP_JTextField);
 //			gatewayIP_JTextField.setText(Para.Gateway_IP);
 			
 			localIP_JLabel = new JLabel("本机IP");
@@ -118,12 +119,12 @@ public class VersionUpdate extends JPanel implements ActionListener{
 			this.add(fwVersion_JLabel);
 			this.add(fwVersion_JTextField);
 			
-			gwVersion_JLabel = new JLabel("网关版本号");
-			gwVersion_JTextField = new JTextField();
-			gwVersion_JLabel.setBounds(50,130,100,30);
-			gwVersion_JTextField.setBounds(130, 130, 320, 30);
-			this.add(gwVersion_JLabel);
-			this.add(gwVersion_JTextField);
+//			gwVersion_JLabel = new JLabel("网关版本号");
+//			gwVersion_JTextField = new JTextField();
+//			gwVersion_JLabel.setBounds(50,130,100,30);
+//			gwVersion_JTextField.setBounds(130, 130, 320, 30);
+//			this.add(gwVersion_JLabel);
+//			this.add(gwVersion_JTextField);
 		}
 		
 		{
@@ -144,7 +145,7 @@ public class VersionUpdate extends JPanel implements ActionListener{
 				public void run() {
 					// TODO Auto-generated method stub
 					saveVersion();
-					updateGateway(gatewayIP_JTextField.getText(),localIP_JTextField.getText());
+					updateGateway(deviceIP_JTextField.getText(),localIP_JTextField.getText());
 				}
 			}).start();
 		}else if("刷新".equals(arg0.getActionCommand())){
@@ -154,7 +155,7 @@ public class VersionUpdate extends JPanel implements ActionListener{
 			}catch (UnknownHostException e){
 				MainJFrame.showMssage("获取本机IP地址失败！\n");
 			}
-			String ip1 = gatewayIP_JTextField.getText();
+			String ip1 = deviceIP_JTextField.getText();
 			String ip2 = localIP_JTextField.getText();
 			if (!Ping.isSameSegment(ip1, ip2)) {
 				MainJFrame.showMssageln("本机IP和设备不再同一网段！");
@@ -163,24 +164,26 @@ public class VersionUpdate extends JPanel implements ActionListener{
 	}
 	
 	private boolean updateGateway(String gatewayip,String hostip){
-		Connect telnet = MainJFrame.getInstance().telnetGateway(gatewayIP_JTextField.getText(), 23);
-		if(null==telnet){
-			return false;
-		}
-		
-		telnet.sendCommand("cd /powerlineImpl/cpp/main");
-		String gw = telnet.sendCommand("./powerlineImpl.exe -v").split("\r\n")[1];
-		String hw = telnet.sendCommand("version hw show").split("\r\n")[1];
-		String fw = telnet.sendCommand("version fw show").split("\r\n")[1];
+//		Connect telnet = MainJFrame.getInstance().telnetGateway(deviceIP_JTextField.getText(), 23);
+//		telnet.sendCommand("cd /powerlineImpl/cpp/main");
+//		String gw = telnet.sendCommand("./powerlineImpl.exe -v").split("\r\n")[1];
+//		String hw = telnet.sendCommand("version hw show").split("\r\n")[1];
+//		String fw = telnet.sendCommand("version fw show").split("\r\n")[1];
+
+        ConnectParamSet connectParamSet = ConnectParamSet.getInstance();
+        GeneralSet generalSet = GeneralSet.getInstance();
+		SSHClient sshClient = new SSHClient(connectParamSet.getUser(), connectParamSet.getPwd(),
+				generalSet.getDevice_IP(), connectParamSet.getSshPort());
+
+        String hw = sshClient.executeCmd("version hw show").replace("\n","");
+        String fw = sshClient.executeCmd("version fw show").replace("\n","");
 		
 		//脚本修改后输出的内容不再是"ESHG50"-"v1.1"这种，没有两端的冒号
-		//hw = hw.substring(1, hw.length()-1);
-		//fw = fw.substring(1, fw.length()-1);
-		MainJFrame.showMssageln("hw：" + hw + "\nfw：" + fw + "\ngw：" + gw);
+		MainJFrame.showMssageln("hw：" + hw + "\nfw：" + fw + "\n");
 		String hwLast_v = hwVersion_JTextField.getText();
 		String fwLast_v = fwVersion_JTextField.getText();
-		String gwLast_v = gwVersion_JTextField.getText();
-		if(hw.equals(hwLast_v)&&fw.equals(fwLast_v)&&gw.equals(gwLast_v)){
+//		String gwLast_v = gwVersion_JTextField.getText();
+		if(hw.equals(hwLast_v)&&fw.equals(fwLast_v)){
 			MainJFrame.showMssageln("路由器网关已是最新版本无需更新！");
 			return true;
 		}else{
@@ -195,15 +198,15 @@ public class VersionUpdate extends JPanel implements ActionListener{
 			return false;
 		}
 		
-		String setHw = telnet.sendCommand("version hw set "+hwLast_v);
+		String setHw = sshClient.executeCmd("version hw set " + hwLast_v);
 		if(setHw.contains("ok")){
 			MainJFrame.showMssageln("硬件版本号设置成功...升级系统");
 		}else{
 			MainJFrame.showMssageln("硬件版本号设置失败！");
 		}
 		//MainJFrame.showMssageln("fwupdate "+updateFileName+" "+hostip);
-		telnet.sendCommand("cd /tmp");
-		String download = telnet.sendCommand("tftp -g -r "+updateFileName+" "+hostip);
+//		telnet.sendCommand("cd /tmp");
+		String download = sshClient.executeCmd("tftp -g -l /tmp/"+updateFileName+" -r "+updateFileName+" "+hostip);
 		if(download.contains("timeout")){
 			MainJFrame.showMssageln("升级文件传输超时!");
 			return false;
@@ -211,8 +214,8 @@ public class VersionUpdate extends JPanel implements ActionListener{
 			MainJFrame.showMssageln("发生错误!");
 			return false;
 		}
-		telnet.sendCommandLiner("sysupgrade -n "+updateFileName);
-		return true;
+        sshClient.executtingCmd("sysupgrade /tmp/" + updateFileName);
+        return true;
 	}
 	
 	private boolean setVersion(){
@@ -223,20 +226,19 @@ public class VersionUpdate extends JPanel implements ActionListener{
 		}
 		hwVersion_JTextField.setText(map.get("hwVersion"));
 		fwVersion_JTextField.setText(map.get("fwVersion"));
-		gwVersion_JTextField.setText(map.get("gwVersion"));
-		gatewayIP_JTextField.setText(map.get("routeGateIP_Update"));
+//		gwVersion_JTextField.setText(map.get("gwVersion"));
+		deviceIP_JTextField.setText(map.get("deviceIP"));
 		//localIP_JTextField.setText(map.get("hostIP_Update"));
 		
 		return true;
 	}
 	public boolean saveVersion(){
 		Map<String,String> map = new HashMap();
-		map.put("routeGateIP_Update", gatewayIP_JTextField.getText());
+//		map.put("routeGateIP_Update", deviceIP_JTextField.getText());
 		//map.put("hostIP_Update", localIP_JTextField.getText());
-		
 		map.put("hwVersion", hwVersion_JTextField.getText());
 		map.put("fwVersion", fwVersion_JTextField.getText());
-		map.put("gwVersion", gwVersion_JTextField.getText());
+//		map.put("gwVersion", gwVersion_JTextField.getText());
 		
 		ProgramDataManag.updateConf("deviceTest.conf", map);
 		return true;

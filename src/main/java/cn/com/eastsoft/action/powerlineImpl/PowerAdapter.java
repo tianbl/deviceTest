@@ -26,7 +26,7 @@ public class PowerAdapter extends PowerLine{
 
     @Override
     public boolean info_set(Map<String,String> qrcodeInfo) {
-        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>.信息设置<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>1.信息设置<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         String[] formate={"id","sn","MAClabel","gid","pwd","devicekey","mac_1","mac_3","mac_5","mac_6"};
         ServerInfo serverInfo = null;
         if(ServerSet.getInstance().isLocalSelected()){
@@ -107,14 +107,16 @@ public class PowerAdapter extends PowerLine{
             MainJFrame.showMssageln("更新数据库数据状态成功，信息设置完成!");
         }else {
             MainJFrame.showMssageln("更新数据库数据状态失败！");
+            return false;
         }
 
+        MainJFrame.showMssageln("信息设置成功！");
         return true;
     }
 
     @Override
     public boolean wan_Lan_test() {
-        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>.LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>2.LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
         generalSet = GeneralSet.getInstance();
         int numOfping = GeneralSet.getInstance().getNumOfPing();
@@ -143,7 +145,7 @@ public class PowerAdapter extends PowerLine{
 
     @Override
     public boolean carrier_test() {
-        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>.载波测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>3.载波测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         generalSet = GeneralSet.getInstance();
         int numOfping = generalSet.getNumOfPing();
         String pingIP = generalSet.getAccompany_IP();

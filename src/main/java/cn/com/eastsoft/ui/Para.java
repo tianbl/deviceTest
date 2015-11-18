@@ -1,5 +1,7 @@
 package cn.com.eastsoft.ui;
 
+import cn.com.eastsoft.util.ToolUtil;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -33,6 +35,11 @@ public class Para {
                     getResource("resources.properties").getPath();
             System.out.println(path);
             File file = new File(path);
+            if(false==file.exists()){
+                MainJFrame.showMssageln("非开发环境中运行,读取程序根目录中的resources.properties配置文件...");
+                path = ToolUtil.getNowPath()+"resources.properties";
+                file = new File(path);
+            }
             InputStream inputStream = new BufferedInputStream(new FileInputStream(file));
             Properties properties = new Properties();
             properties.load(inputStream);

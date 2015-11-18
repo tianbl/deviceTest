@@ -47,7 +47,7 @@ public class MainJFrame extends JFrame implements ActionListener {
         super();
         setResizable(false);
         setBackground(Color.WHITE);
-        this.setTitle("智能路由器网关测试工具");
+        this.setTitle("测试工具");
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         initGUI();
         System.out.println("GateTestJFrame signal instance...");

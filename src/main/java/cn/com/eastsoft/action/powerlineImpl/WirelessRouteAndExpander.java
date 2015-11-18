@@ -25,7 +25,7 @@ public class WirelessRouteAndExpander extends PowerLine {
 
     @Override
     public boolean info_set(Map<String, String> qrcodeInfo) {
-        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>.信息设置<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>1.信息设置<<<<<<<<<<<<<<<<<<<<<<<<<<<");
 
         String[] formate = {"id", "sn", "MAClabel", "dak", "devicekey", "mac_1", "mac_3", "mac_5", "mac_6"};
         ServerInfo serverInfo = null;
@@ -144,13 +144,16 @@ public class WirelessRouteAndExpander extends PowerLine {
             MainJFrame.showMssageln("数据库字段设置成功！");
         }else {
             MainJFrame.showMssageln("数据库字段设置失败！");
+            return false;
         }
+        sshClient.closeConnect();
+        MainJFrame.showMssageln("信息设置成功！");
         return true;
     }
 
     @Override
     public boolean wan_Lan_test() {
-        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>.WAN口和LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>2.WAN口和LAN口测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         generalSet = GeneralSet.getInstance();
         int numOfping = generalSet.getNumOfPing();
         String[] targetIP = {generalSet.getDevice_IP(), generalSet.getDefaultgw_IP()};
@@ -172,7 +175,7 @@ public class WirelessRouteAndExpander extends PowerLine {
 
     @Override
     public boolean carrier_test() {
-        MainJFrame.showMssageln("电力线无线路由器 载波测试");
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>3.载波测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         generalSet = GeneralSet.getInstance();
         int numOfping = generalSet.getNumOfPing();
         String pingIP = generalSet.getAccompany_IP();
@@ -188,7 +191,7 @@ public class WirelessRouteAndExpander extends PowerLine {
 
     @Override
     public boolean wifi_test() {
-        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>电力线无线路由器 wifi测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        MainJFrame.showMssageln(">>>>>>>>>>>>>>>>>>>>>4.wifi测试<<<<<<<<<<<<<<<<<<<<<<<<<<<");
         DeviceTest deviceTest = MainJFrame.getInstance().getDeviceTest();
         String wifiInterface = Ping.getInterface("netsh wlan show interfaces");
         //String wifiInterface = "无线网络连接";
@@ -219,11 +222,23 @@ public class WirelessRouteAndExpander extends PowerLine {
 //            }
 //        }
 
-        UDPClient udpClient = UDPClient.getInstance();
-        byte[] bytes = udpClient.sendPacket("255.255.255.255", generalSet.getUdpPort(), ReqMessage.hexStringToBytes("9f0102000001a31f"));
-        ExtenderRes extenderRes = new ExtenderRes(bytes);
-        String ssid = extenderRes.getSsid();
-        MainJFrame.showMssageln("广播报文9f 01 02 00 00 01 a3 1f，获取ssid：" + ssid);
+//        UDPClient udpClient = UDPClient.getInstance();
+//        byte[] bytes = udpClient.sendPacket("255.255.255.255", generalSet.getUdpPort(), ReqMessage.hexStringToBytes("9f0102000001a31f"));
+//        ExtenderRes extenderRes = new ExtenderRes(bytes);
+        String ssid = null;
+//        MainJFrame.showMssageln("广播报文9f 01 02 00 00 01 a3 1f，获取ssid：" + ssid);
+        if(moduleSelected==1){  ///电力线无线路由器
+            SSHClient sshClient = new SSHClient(connectParamSet.getUser(), connectParamSet.getPwd(),
+                    generalSet.getDevice_IP(), connectParamSet.getSshPort());
+            ssid = sshClient.executeCmd("uci get wireless.@wifi-iface[0].ssid").replace("\n","");
+            MainJFrame.showMssageln("执行uci get wireless.@wifi-iface[0].ssid命令，获取ssid：" + ssid);
+        }else {                 ///电力线无线扩展器
+            UDPClient udpClient = UDPClient.getInstance();
+            byte[] bytes = udpClient.sendPacket("255.255.255.255", generalSet.getUdpPort(), ReqMessage.hexStringToBytes("9f0102000001a31f"));
+            ExtenderRes extenderRes = new ExtenderRes(bytes);
+            ssid = extenderRes.getSsid();
+            MainJFrame.showMssageln("广播报文9f 01 02 00 00 01 a3 1f，获取ssid：" + ssid);
+        }
         //检测wifi，并获取信号强度
         String wifi_connectIP = null;
         String wifiStrength = Ping.getWifiStrength(ssid);
@@ -231,6 +246,12 @@ public class WirelessRouteAndExpander extends PowerLine {
             MainJFrame.showMssageln(ssid + "wifi信号强度：" + wifiStrength);
         } else {
             MainJFrame.showMssageln("检测不到有关wifi " + ssid + "的信息...");
+            int i = JOptionPane.showConfirmDialog(deviceTest,
+                    "检测不到有关wifi " + ssid+",是否继续", "提示",
+                    JOptionPane.YES_NO_CANCEL_OPTION);
+            if (0 != i) {
+                return false;
+            }
         }
 
         String connectWifi = "netsh wlan connect name=\"" + ssid + "\" ssid=\"" + ssid + "\" interface=\""
@@ -259,13 +280,12 @@ public class WirelessRouteAndExpander extends PowerLine {
                 if (i >= 2) {
                     String alarmInfo = "请自行连接无线" + ssid + ",然后继续...";
                     int select = JOptionPane.showConfirmDialog(deviceTest, alarmInfo, "提示", JOptionPane.YES_NO_CANCEL_OPTION);
-                    if (0 != i) {
-                        MainJFrame.showMssageln("if");
-                        MainJFrame.showMssageln("无法连接wifi：" + ssid);
+                    if (0 != select) {
+                        MainJFrame.showMssageln("无法连接wifi：" + ssid+",终止wifi测试");
                         Ping.executeCmd(deleteConfig);
                         return false;
                     } else {
-                        MainJFrame.showMssageln("else break");
+                        MainJFrame.showMssageln("wifi测试继续进行...");
                         break;
                     }
                 } else {
@@ -296,7 +316,7 @@ public class WirelessRouteAndExpander extends PowerLine {
         // 删除测试wifi配置文件
 
         if (null == wifi_connectIP) {
-            MainJFrame.showMssageln("无法获取连接到的wifiIP,请先手动连接路由器网关的wifi再继续测试！");
+            MainJFrame.showMssageln("无法获取连接到的wifiIP，请手工测试或者重新操作本步骤！");
             Ping.executeCmd(disconnect);
             Ping.executeCmd(deleteConfig);
             return false;
@@ -304,15 +324,16 @@ public class WirelessRouteAndExpander extends PowerLine {
 
         if (Ping.ping(generalSet.getDevice_IP(), wifi_connectIP, generalSet.getNumOfPing(), 3000)) {
             Ping.executeCmd(disconnect);
+            Ping.executeCmd(deleteConfig);
             MainJFrame.showMssageln("wifi测试 成功...");
-//            Ping.executeCmd(deleteConfig);
         } else {
             Ping.executeCmd(disconnect);
-//            Ping.executeCmd(deleteConfig);
+            Ping.executeCmd(deleteConfig);
             MainJFrame.showMssageln("wifi测试失败...");
+            return false;
         }
-        Ping.executeCmd(deleteConfig);
-        return false;
+//        Ping.executeCmd(deleteConfig);
+        return true;
     }
 
     public byte[] sendMessage(UDPClient udpClient, String ip, int port, byte[] sendBuf) {

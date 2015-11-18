@@ -83,7 +83,7 @@ public class GeneralSet extends JPanel {
             this.add(qrcode_JLabel);
             this.add(qrcode_JTextField);
 
-            linkTest_JButton = new JButton("测试路由器网关连接");
+            linkTest_JButton = new JButton("设备网络连接测试");
             linkTest_JButton.setBounds(530, y, 150, 30);
             linkTest_JButton.addActionListener(buttonActionListener);
             this.add(linkTest_JButton);
@@ -187,15 +187,17 @@ public class GeneralSet extends JPanel {
                         Thread.sleep(300);
                         qrcode_JTextField.setText(queueInfo);
                         Para.test1(queueInfo);
-                        Map<String,String> map = getQrCode_Info();
-                        if(map!=null){
+                        Map<String,String> qrcodeInfo = getQrCode_Info();
+                        if(qrcodeInfo!=null){
                             for(String str:Para.mapKey){
-                                MainJFrame.showMssageln(str+"=="+ map.get(str));
+                                MainJFrame.showMssageln(str+"=="+ qrcodeInfo.get(str));
                             }
                         }
 //                        MainJFrame.showMssage("解析得到标签信息如下\n" +
 //                                "sn:" + map.get("sn") + " gid:" + map.get("gid") + " pwd:" + map.get("pwd") + "\n");
-//                        MainJFrame.getInstance().getDeviceTest().allTest();
+                        if(MainJFrame.getInstance().getDeviceTest().allTest(qrcodeInfo)){
+                            qrcode_JTextField.setText("");
+                        }
 //                        Thread.sleep(2000);
 //                        qrcode_JTextField.setText("");
                     } catch (InterruptedException e) {
@@ -212,7 +214,7 @@ public class GeneralSet extends JPanel {
         public void actionPerformed(ActionEvent arg) {
             // TODO Auto-generated method stub
             String name = arg.getActionCommand();
-            if ("测试路由器网关连接".equals(name)) {
+            if ("设备网络连接测试".equals(name)) {
                 new Thread(new Runnable() {
                     @Override
                     public void run() {

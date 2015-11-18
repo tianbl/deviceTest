@@ -18,6 +18,7 @@ import java.util.Map;
  */
 public abstract class PowerLine{
 
+    protected int moduleSelected;
     protected ServerSet serverSet;
     protected GeneralSet generalSet;
     protected ConnectParamSet connectParamSet;
@@ -83,7 +84,15 @@ public abstract class PowerLine{
         return false;
     }
     public boolean wifi_test(){
-        MainJFrame.showMssage("当前设备无需实现wifi测试");
-        return false;
+//        MainJFrame.showMssage("当前设备无需实现wifi测试");
+        return true;
+    }
+
+    public int getModuleSelected() {
+        return moduleSelected;
+    }
+
+    public void setModuleSelected(int moduleSelected) {
+        this.moduleSelected = moduleSelected;
     }
 }

@@ -100,21 +100,24 @@ public class DeviceTest extends JPanel {
         if(0==selectModule){
             powerLine = new PowerAdapter();
             signalTest_JButton[3].setVisible(false);
-//            generalSet.udpPort_JText.setVisible(true);
-//            generalSet.udpPort_JLabel.setText("udp通信端口");
             generalSet.udpPort_JText.setText(map.get("udpPort"));
+            MainJFrame.getInstance().setTitle("电力线适配器测试");
             MainJFrame.showMssageln(selectModule + "选择电力线适配器"+map.get("udpPort"));
         }else if(1==selectModule){
+
             powerLine = new WirelessRouteAndExpander();
             signalTest_JButton[3].setVisible(true);
             generalSet.udpPort_JText.setText(map.get("deviceUdpPort"));
-            MainJFrame.showMssageln(selectModule + "选择电力线无线路由器"+map.get("deviceUdpPort"));
+            MainJFrame.showMssageln(selectModule + "选择电力线无线路由器" + map.get("deviceUdpPort"));
+            MainJFrame.getInstance().setTitle("电力线无线路由器测试");
         }else if(2==selectModule){
             powerLine = new WirelessRouteAndExpander();
             signalTest_JButton[3].setVisible(true);
             generalSet.udpPort_JText.setText(map.get("deviceUdpPort"));
-            MainJFrame.showMssageln(selectModule + "选择电力线无线扩展器"+map.get("deviceUdpPort"));
+            MainJFrame.showMssageln(selectModule + "选择电力线无线扩展器" + map.get("deviceUdpPort"));
+            MainJFrame.getInstance().setTitle("电力线无线扩展器测试");
         }
+        powerLine.setModuleSelected(selectModule);
     }
 
     class ButtonActionListener implements ActionListener {
@@ -224,7 +227,7 @@ public class DeviceTest extends JPanel {
             }
         }
         if (false == powerLine.wifi_test()) {
-            int i = JOptionPane.showConfirmDialog(this, "wifi测试发生错误，是否继续其他测试？", "提示", JOptionPane.YES_NO_CANCEL_OPTION);
+            int i = JOptionPane.showConfirmDialog(this, "wifi测试发生错误？", "提示", JOptionPane.YES_NO_CANCEL_OPTION);
             if (0 != i) {
                 return false;
             }

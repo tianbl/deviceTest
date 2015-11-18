@@ -40,7 +40,7 @@ public class ConnectParamSet extends JPanel implements ActionListener, ItemListe
     private ConnectParamSet() {
         super();
         this.setLayout(null);
-        UDPSet = new JCheckBox("UDP通讯参数设置");
+        UDPSet = new JCheckBox("SSC1661 UDP通讯参数设置");
         SSHSet = new JCheckBox("SSH连接参数设置");
         UDPSet.setBounds(60, 10, 200, 30);
         SSHSet.setBounds(340, 10, 200, 30);
