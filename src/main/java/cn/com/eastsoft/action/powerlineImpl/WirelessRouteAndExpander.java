@@ -235,6 +235,9 @@ public class WirelessRouteAndExpander extends PowerLine {
         }else {                 ///电力线无线扩展器
             UDPClient udpClient = UDPClient.getInstance();
             byte[] bytes = udpClient.sendPacket("255.255.255.255", generalSet.getUdpPort(), ReqMessage.hexStringToBytes("9f0102000001a31f"));
+            if(null==bytes){
+                return false;
+            }
             ExtenderRes extenderRes = new ExtenderRes(bytes);
             ssid = extenderRes.getSsid();
             MainJFrame.showMssageln("广播报文9f 01 02 00 00 01 a3 1f，获取ssid：" + ssid);
