@@ -47,7 +47,7 @@ public class WirelessRouteAndExpander extends PowerLine {
             boolean snEqual = qrcodeInfo.get("sn").equals(deviceInfo.get("sn"));
             boolean macEqual = qrcodeInfo.get("mac").equals(deviceInfo.get("mac_1"));
             boolean dakEqual = true;
-            if (qrcodeInfo.get("dak") != null || !"".equals(qrcodeInfo.get("dak"))) {
+            if (qrcodeInfo.get("dak") != null && !"".equals(qrcodeInfo.get("dak"))) {
                 dakEqual = qrcodeInfo.get("dak").equals(deviceInfo.get("dak"));
             }
             if (!(snEqual && macEqual && dakEqual)) {
