@@ -30,7 +30,7 @@ public class MainJFrame extends JFrame implements ActionListener {
 
     private JPanel uiPanel;      //主功能节目布局在此panel上面
     private JTabbedPane jtab;    //个功能选项卡
-    private String[] deviceList = {"电力线适配器","电力线无线路由器","电力线无线无扩展器"};
+    private String[] deviceList = {"电力线适配器","电力线无线路由器","电力线无线扩展器"};
     private DeviceTest deviceTest;
     private VersionUpdate gateUpdate;
     private ServerSet serverSet;
