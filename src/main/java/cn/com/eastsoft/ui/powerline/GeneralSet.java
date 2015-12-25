@@ -86,7 +86,7 @@ public class GeneralSet extends JPanel {
             linkTest_JButton = new JButton("设备网络连接测试");
             linkTest_JButton.setBounds(530, y, 150, 30);
             linkTest_JButton.addActionListener(buttonActionListener);
-            this.add(linkTest_JButton);
+            //this.add(linkTest_JButton);
 
             showClear_JButton = new JButton("清空信息台");
             showClear_JButton.setBounds(680, y, 100, 30);
