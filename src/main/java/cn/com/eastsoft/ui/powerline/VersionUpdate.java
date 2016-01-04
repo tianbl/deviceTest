@@ -113,9 +113,9 @@ public class VersionUpdate extends JPanel implements ActionListener {
             this.add(hwVersion_Jlabel);
             this.add(hwVersion_JTextField);
 
-            fwVersion_JLabel = new JLabel("路由器固件版本号");
+            fwVersion_JLabel = new JLabel("固件版本号");
             fwVersion_JTextField = new JTextField();
-            fwVersion_JLabel.setBounds(10, 90, 100, 30);
+            fwVersion_JLabel.setBounds(50, 90, 100, 30);
             fwVersion_JTextField.setBounds(130, 90, 320, 30);
             this.add(fwVersion_JLabel);
             this.add(fwVersion_JTextField);
@@ -181,10 +181,10 @@ public class VersionUpdate extends JPanel implements ActionListener {
         String fwLast_v = fwVersion_JTextField.getText();
 //		String gwLast_v = gwVersion_JTextField.getText();
         if (hw.equals(hwLast_v) && fw.equals(fwLast_v)) {
-            MainJFrame.showMssageln("路由器网关已是最新版本无需更新！");
+            MainJFrame.showMssageln("当前固件已是最新版本无需更新！");
             return true;
         } else {
-            int i = JOptionPane.showConfirmDialog(this, "路由器网关存在可更新的版本？", "提示",
+            int i = JOptionPane.showConfirmDialog(this, "存在可更新的固件版本，是否更新？", "提示",
                     JOptionPane.YES_NO_CANCEL_OPTION);
             if (0 != i) {
                 return false;
@@ -204,11 +204,15 @@ public class VersionUpdate extends JPanel implements ActionListener {
         //MainJFrame.showMssageln("fwupdate "+updateFileName+" "+hostip);
 //		telnet.sendCommand("cd /tmp");
         String download = sshClient.executeCmd("tftp -g -l /tmp/" + updateFileName + " -r " + updateFileName + " " + hostip);
+        MainJFrame.showMssageln(download);
         if (download.contains("timeout")) {
             MainJFrame.showMssageln("升级文件传输超时!");
             return false;
         } else if (download.contains("error")) {
             MainJFrame.showMssageln("发生错误!");
+            return false;
+        }else if(download.contains("-bash: tftp: command not found")){
+            MainJFrame.showMssageln("发生错误,当前固件中无tftp命令，无法升级!");
             return false;
         }
         sshClient.executtingCmd("sysupgrade /tmp/" + updateFileName);
