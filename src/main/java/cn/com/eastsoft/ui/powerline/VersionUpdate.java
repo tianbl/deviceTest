@@ -50,7 +50,7 @@ public class VersionUpdate extends JPanel implements ActionListener {
 
         {
             deviceIP_JLabel = new JLabel("被测设备IP");
-            deviceIP_JLabel.setBounds(20, 10, 100, 30);
+            deviceIP_JLabel.setBounds(50, 10, 100, 30);
             deviceIP_JTextField = new JTextField();
             deviceIP_JTextField.setBounds(130, 10, 100, 30);
             this.add(deviceIP_JLabel);
@@ -87,10 +87,20 @@ public class VersionUpdate extends JPanel implements ActionListener {
 
                     } else if (file.isFile()) {
                         MainJFrame.showMssageln("文件:" + file.getAbsolutePath());
+                        updateFileName = file.getName();
+                        if(updateFileName.contains("(")){
+                            int i = JOptionPane.showConfirmDialog(MainJFrame.getInstance(),
+                                    "请将升级固件名称中的'('和‘)'去掉！", "提示",
+                                    JOptionPane.DEFAULT_OPTION);
+                            realPath = null;
+                            updateFileName = null;
+                            fileChooser.setText("...");
+                        }else {
+                            updateFileName = jfc.getSelectedFile().getName();
+                            realPath = file.getAbsolutePath();
+                            fileChooser.setText(updateFileName);
+                        }
                     }
-                    updateFileName = jfc.getSelectedFile().getName();
-                    realPath = file.getAbsolutePath();
-                    fileChooser.setText(updateFileName);
                 }
             });
             this.add(fileLabel);
@@ -165,6 +175,10 @@ public class VersionUpdate extends JPanel implements ActionListener {
     }
 
     private boolean updateGateway(String gatewayip, String hostip) {
+        if (null == updateFileName || updateFileName.equals("")) {
+            MainJFrame.showMssageln("先选择升级文件");
+            return false;
+        }
 //		Connect telnet = MainJFrame.getInstance().telnetGateway(deviceIP_JTextField.getText(), 23);
 //        GeneralSet generalSet = GeneralSet.getInstance();
         ConnectParamSet connectParamSet = ConnectParamSet.getInstance();
@@ -190,30 +204,28 @@ public class VersionUpdate extends JPanel implements ActionListener {
                 return false;
             }
         }
-        if (null == updateFileName || updateFileName.equals("")) {
-            MainJFrame.showMssageln("先选择升级文件");
+
+        //MainJFrame.showMssageln("fwupdate "+updateFileName+" "+hostip);
+//		telnet.sendCommand("cd /tmp");
+        Map<String,String> map = new HashMap<>();
+        String download = sshClient.executeCmd("tftp -g -l /tmp/" + updateFileName + " -r " + updateFileName + " " + hostip,map);
+        MainJFrame.showMssageln(download);
+        String errorMsg = map.get("errorMsg");
+        if (errorMsg.contains("timeout")) {
+            MainJFrame.showMssageln("升级文件传输超时!仔细检查设置！");
+            return false;
+        } else if (errorMsg.contains("error")) {
+            MainJFrame.showMssageln("升级包下载发生错误!请查看tftp Server程序中的传输记录！");
+            return false;
+        }else if(errorMsg.contains("-bash: tftp: command not found")){
+            MainJFrame.showMssageln("发生错误,当前固件中无tftp命令，无法升级!");
             return false;
         }
-
         String setHw = sshClient.executeCmd("version hw set " + hwLast_v);
         if (setHw.contains("ok")) {
             MainJFrame.showMssageln("硬件版本号设置成功...\n升级系统...");
         } else {
             MainJFrame.showMssageln("硬件版本号设置失败！");
-        }
-        //MainJFrame.showMssageln("fwupdate "+updateFileName+" "+hostip);
-//		telnet.sendCommand("cd /tmp");
-        String download = sshClient.executeCmd("tftp -g -l /tmp/" + updateFileName + " -r " + updateFileName + " " + hostip);
-        MainJFrame.showMssageln(download);
-        if (download.contains("timeout")) {
-            MainJFrame.showMssageln("升级文件传输超时!");
-            return false;
-        } else if (download.contains("error")) {
-            MainJFrame.showMssageln("发生错误!");
-            return false;
-        }else if(download.contains("-bash: tftp: command not found")){
-            MainJFrame.showMssageln("发生错误,当前固件中无tftp命令，无法升级!");
-            return false;
         }
         sshClient.executtingCmd("sysupgrade /tmp/" + updateFileName);
         return true;

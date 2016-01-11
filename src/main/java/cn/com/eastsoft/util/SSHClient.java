@@ -7,6 +7,7 @@ import com.jcraft.jsch.Session;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.util.Map;
 
 /**
  * Created by baolei on 2015/11/12.
@@ -86,6 +87,34 @@ public class SSHClient {
 //                System.out.println(buf);
             }
 //            in.close();
+            reader.close();
+        } catch (Exception e) {
+            System.out.println(command + "命令执行异常！");
+            e.printStackTrace();
+        } finally {
+            openChannel.disconnect();
+        }
+        return result.toString();
+    }
+
+    public String executeCmd(String command,Map<String,String> error) {
+        StringBuffer result = new StringBuffer();
+        try {
+            openChannel = (ChannelExec) session.openChannel("exec");
+            openChannel.setCommand(command);
+            openChannel.setInputStream(null);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(openChannel.getInputStream()));
+            BufferedReader errorMsgReader = new BufferedReader(new InputStreamReader(openChannel.getErrStream()));
+            openChannel.connect();
+            String buf = null;
+            StringBuffer sb = new StringBuffer();
+            while ((buf = errorMsgReader.readLine()) != null) {
+                sb.append(buf+"\n");
+            }
+            error.put("errorMsg",sb.toString());
+            while ((buf = reader.readLine()) != null) {
+                result.append(buf + "\n");
+            }
             reader.close();
         } catch (Exception e) {
             System.out.println(command + "命令执行异常！");

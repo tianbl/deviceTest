@@ -50,6 +50,7 @@ public class GeneralSet extends JPanel {
     private JTextField numOfPing_JTextField;
     public JLabel udpPort_JLabel;
     public JTextField udpPort_JText;
+    String queueInfo = null;
 
 
     //private JTextChange jtextChange;
@@ -180,36 +181,47 @@ public class GeneralSet extends JPanel {
                     /*if(null==mainJFrame){
 						mainJFrame = MainJFrame.getInstance();	//获取主框架单例
 					}*/
+//                    queueInfo = null;
                     try {
-                        String queueInfo = BarcodeBuffer.consume();
-                        MainJFrame.showMssageln("扫码信息缓冲队列中获取二维码信息：" + queueInfo + "");
-                        qrcode_JTextField.setText("");
-                        Thread.sleep(300);
-                        qrcode_JTextField.setText(queueInfo);
-                        Para.test1(queueInfo);
-                        Map<String,String> qrcodeInfo = getQrCode_Info();
-                        if(qrcodeInfo!=null){
-                            String[] qrcodeInfoKey = null;
-                            if(null==qrcodeInfo.get("ip")){
-                                qrcodeInfoKey = Para.mapKey;
-                            }else {
-                                qrcodeInfoKey = Para.mapKeyOld;
-                            }
-                            for(String str:qrcodeInfoKey){
-                                MainJFrame.showMssageln(str+"=="+ qrcodeInfo.get(str));
-                            }
-                        }
-//                        MainJFrame.showMssage("解析得到标签信息如下\n" +
-//                                "sn:" + map.get("sn") + " gid:" + map.get("gid") + " pwd:" + map.get("pwd") + "\n");
-                        if(MainJFrame.getInstance().getDeviceTest().allTest(qrcodeInfo)){
-                            qrcode_JTextField.setText("");
-                        }
-//                        Thread.sleep(2000);
-//                        qrcode_JTextField.setText("");
+                        queueInfo = BarcodeBuffer.consume();
                     } catch (InterruptedException e) {
-                        // TODO Auto-generated catch block
                         e.printStackTrace();
                     }
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                MainJFrame.showMssageln("扫码信息缓冲队列中获取二维码信息：" + queueInfo + "");
+                                qrcode_JTextField.setText("");
+                                Thread.sleep(300);
+                                qrcode_JTextField.setText(queueInfo);
+                                Para.test1(queueInfo);
+                                Map<String,String> qrcodeInfo = getQrCode_Info();
+                                if(qrcodeInfo!=null){
+                                    String[] qrcodeInfoKey = null;
+                                    if(null==qrcodeInfo.get("ip")){
+                                        qrcodeInfoKey = Para.mapKey;
+                                    }else {
+                                        qrcodeInfoKey = Para.mapKeyOld;
+                                    }
+                                    for(String str:qrcodeInfoKey){
+                                        MainJFrame.showMssageln(str+"=="+ qrcodeInfo.get(str));
+                                    }
+                                }
+//                        MainJFrame.showMssage("解析得到标签信息如下\n" +
+//                                "sn:" + map.get("sn") + " gid:" + map.get("gid") + " pwd:" + map.get("pwd") + "\n");
+                                if(MainJFrame.getInstance().getDeviceTest().allTest(qrcodeInfo)){
+                                    qrcode_JTextField.setText("");
+                                    queueInfo = null;
+                                }
+//                        Thread.sleep(2000);
+//                        qrcode_JTextField.setText("");
+                            } catch (InterruptedException e) {
+                                // TODO Auto-generated catch block
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
                 }
             }
         }).start();
