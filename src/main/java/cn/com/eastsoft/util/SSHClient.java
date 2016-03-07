@@ -78,8 +78,25 @@ public class SSHClient {
 //            System.out.println(exitStatus);
 //            InputStream in = openChannel.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(openChannel.getInputStream()));
+            BufferedReader errorMsgReader = new BufferedReader(new InputStreamReader(openChannel.getErrStream()));
             openChannel.connect();
             String buf = null;
+            String baseCmd = null;
+            int spaceIndex = 0;
+            while ((buf = errorMsgReader.readLine()) != null) {
+                result.append(buf+"\n");
+                if((spaceIndex=command.indexOf(" "))==-1){  //截取命令
+                    baseCmd = command;
+                }else {
+                    baseCmd = command.substring(0,spaceIndex);
+                }
+                if(buf.contains("-ash: "+baseCmd+": not found")||buf.contains(baseCmd+": command not found")){   //判断固件中命令是否存在
+                    MainJFrame.showMssageln("固件中未包含该命令" + command);
+                    buf += "[with error command not found]";
+                    result.append("[with error command not found]");
+                    break;
+                }
+            }
             while ((buf = reader.readLine()) != null) {
 //                result+= new String(buf.getBytes("gbk"),"UTF-8")+"    \r\n";
 //                result.append(buf.getBytes());

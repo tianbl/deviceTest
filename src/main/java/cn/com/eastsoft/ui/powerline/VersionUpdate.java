@@ -190,6 +190,7 @@ public class VersionUpdate extends JPanel implements ActionListener {
         String fw = sshClient.executeCmd("version fw show").replace("\n", "");
 
         //脚本修改后输出的内容不再是"ESHG50"-"v1.1"这种，没有两端的冒号
+        MainJFrame.showMssageln("固件执行命令结果如下");
         MainJFrame.showMssageln("hw：" + hw + "\nfw：" + fw + "\n");
         String hwLast_v = hwVersion_JTextField.getText();
         String fwLast_v = fwVersion_JTextField.getText();
@@ -197,7 +198,10 @@ public class VersionUpdate extends JPanel implements ActionListener {
         if (hw.equals(hwLast_v) && fw.equals(fwLast_v)) {
             MainJFrame.showMssageln("当前固件已是最新版本无需更新！");
             return true;
-        } else {
+        } else if(hw.contains("error")||fw.contains("error")){
+            MainJFrame.showMssageln("发生错误");
+            return false;
+        }else {
             int i = JOptionPane.showConfirmDialog(this, "存在可更新的固件版本，是否更新？", "提示",
                     JOptionPane.YES_NO_CANCEL_OPTION);
             if (0 != i) {
