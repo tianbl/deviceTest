@@ -19,7 +19,7 @@ public class BarcodeKeyboardListener{
     private long start;
     private Map<Integer,Character> keyToLetter=new HashMap<Integer,Character>();
     //一次扫描的最长时间
-    private static int maxScanTime=500;
+    private static int maxScanTime=3000;
     //条形码的最短长度
     private static int barcodeMinLength=6;
 
@@ -84,7 +84,8 @@ public class BarcodeKeyboardListener{
 //        System.out.println("接收到的扫描数据："+barcode.toString());
         if(GeneralSet.getInstance().checkCodeInfo(barcode.toString(),true)>0){
         	//当匹配成功后重新为缓冲分配内存，匹配串在checkCodeInfo中被加入生产者队列
-//        	barcode=new StringBuilder();
+            //完成一次扫描后后者超时都需要清空缓冲重新捕捉数据
+        	barcode=new StringBuilder();
 //        	BarcodeBuffer.product(barcode.toString());
         }
         if (keyCode == 13) {
