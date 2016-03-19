@@ -23,6 +23,7 @@ public class UDPClient {
 
     private UDPClient() {
         try {
+            MainJFrame.showMssageln("创建socket,设置延时5秒");
             client = new DatagramSocket();
             client.setSoTimeout(5000);
         } catch (SocketException e) {
@@ -47,8 +48,10 @@ public class UDPClient {
                 this.port = port;
                 inetSocketAddress = new InetSocketAddress(IP, port);
             }
-            if (client.isClosed()) {
+            if (client==null||client.isClosed()) {
+                MainJFrame.showMssageln("创建socket,设置延时5秒");
                 client = new DatagramSocket();
+                client.setSoTimeout(5000);
             }
 
 //		byte[] sendBuf = sendStr.getBytes();
@@ -62,6 +65,7 @@ public class UDPClient {
             client.receive(recvPacket);
             receByte = recvPacket.getData();
             System.out.println("收到数据:");
+            client.close();
         } catch (Exception e) {
             if(e.getMessage().contains("timed out")){
                 MainJFrame.showMssageln("报文传输超时...");
